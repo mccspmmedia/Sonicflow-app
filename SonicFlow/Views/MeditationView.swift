@@ -22,8 +22,5 @@ struct MeditationView: View {
             .padding()
         }
         .background(Color("DarkBlue").ignoresSafeArea())
-        .onAppear {
-            soundVM.appendSoundsIfNeeded(soundVM.meditationSoundList)
-        }
     }
 }

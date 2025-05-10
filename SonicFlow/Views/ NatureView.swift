@@ -22,8 +22,5 @@ struct NatureView: View {
             .padding()
         }
         .background(Color("DarkBlue").ignoresSafeArea())
-        .onAppear {
-            soundVM.appendSoundsIfNeeded(soundVM.natureSoundList)
-        }
     }
 }

@@ -8,7 +8,7 @@ class SoundPlayerViewModel: ObservableObject {
     @Published var currentSound: Sound? = nil
     @Published var showTimer: Bool = false
 
-    private var players: [AVAudioPlayer?] = []
+    private var player: AVAudioPlayer?
     private var timer: Timer?
 
     let natureSoundList: [Sound] = [
@@ -58,113 +58,67 @@ class SoundPlayerViewModel: ObservableObject {
         }
     }
 
-    func appendSoundsIfNeeded(_ sounds: [Sound]) {
-        for sound in sounds {
-            if !allSounds.contains(where: { $0.id == sound.id }) {
-                allSounds.append(sound)
-                players.append(nil)
-            }
-        }
-        objectWillChange.send()
-    }
-
     func playExclusive(_ sound: Sound) {
         stopAllSounds()
-        toggleSound(sound)
+        playSound(sound)
     }
 
-    func toggleSound(_ sound: Sound) {
-        guard let index = allSounds.firstIndex(where: { $0.id == sound.id }) else { return }
-        if allSounds[index].isPlaying {
-            stopSound(at: index)
-        } else {
-            playSound(at: index)
-            currentSound = allSounds[index]
-        }
-    }
-
-    func setVolume(for sound: Sound, to volume: Float) {
-        guard let index = allSounds.firstIndex(where: { $0.id == sound.id }) else { return }
-        allSounds[index].volume = volume
-        players[safe: index]??.volume = volume
-        objectWillChange.send()
-    }
-
-    private func playSound(at index: Int) {
-        guard index < allSounds.count else { return }
-        guard let url = Bundle.main.url(forResource: allSounds[index].fileName, withExtension: "mp3") else {
-            print("File not found: \(allSounds[index].fileName).mp3")
+    private func playSound(_ sound: Sound) {
+        guard let url = Bundle.main.url(forResource: sound.fileName, withExtension: "mp3") else {
+            print("File not found: \(sound.fileName).mp3")
             return
         }
 
         do {
-            let player = try AVAudioPlayer(contentsOf: url)
-            player.numberOfLoops = -1
-            player.volume = allSounds[index].volume
-            player.prepareToPlay()
-            player.play()
+            player = try AVAudioPlayer(contentsOf: url)
+            player?.numberOfLoops = -1
+            player?.volume = sound.volume
+            player?.prepareToPlay()
+            player?.play()
 
-            if index >= players.count {
-                players.append(contentsOf: Array(repeating: nil, count: index - players.count + 1))
-            }
-
-            players[index] = player
-            allSounds[index].isPlaying = true
-            currentSound = allSounds[index]
-            addToRecentlyPlayed(sound: allSounds[index])
-            objectWillChange.send()
+            currentSound = sound
+            markSoundAsPlaying(sound)
+            addToRecentlyPlayed(sound: sound)
         } catch {
             print("Playback error: \(error.localizedDescription)")
         }
     }
 
-    private func stopSound(at index: Int) {
-        guard index < players.count else { return }
-        players[index]?.stop()
-        allSounds[index].isPlaying = false
-        currentSound = nil
-        objectWillChange.send()
-    }
-
     func stopAllSounds() {
-        for i in players.indices {
-            players[i]?.stop()
-            if i < allSounds.count {
-                allSounds[i].isPlaying = false
-            }
-        }
+        player?.stop()
+        player = nil
+        markAllSoundsAsStopped()
         currentSound = nil
-        objectWillChange.send()
     }
 
-    func pauseAllSounds() {
-        for i in players.indices {
-            players[i]?.pause()
+    func toggleSound(_ sound: Sound) {
+        if currentSound?.id == sound.id {
+            stopAllSounds()
+        } else {
+            playExclusive(sound)
         }
-        for i in allSounds.indices {
-            allSounds[i].isPlaying = false
-        }
-        objectWillChange.send()
     }
 
-    func resumeAllSounds() {
-        for i in players.indices {
-            players[i]?.play()
+    private func markSoundAsPlaying(_ sound: Sound) {
+        allSounds.indices.forEach { index in
+            allSounds[index].isPlaying = allSounds[index].id == sound.id
         }
-        for i in allSounds.indices {
-            allSounds[i].isPlaying = true
-        }
-        objectWillChange.send()
     }
 
-    func removeSound(_ sound: Sound) {
-        if let index = allSounds.firstIndex(where: { $0.id == sound.id }) {
-            stopSound(at: index)
-            allSounds.remove(at: index)
-            if index < players.count {
-                players.remove(at: index)
+    private func markAllSoundsAsStopped() {
+        allSounds.indices.forEach { index in
+            allSounds[index].isPlaying = false
+        }
+    }
+
+    func setVolume(for sound: Sound, to volume: Float) {
+        if currentSound?.id == sound.id {
+            player?.volume = volume
+        }
+        allSounds.indices.forEach { index in
+            if allSounds[index].id == sound.id {
+                allSounds[index].volume = volume
             }
-            objectWillChange.send()
         }
     }
 

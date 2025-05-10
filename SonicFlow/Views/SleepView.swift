@@ -22,8 +22,5 @@ struct SleepView: View {
             .padding()
         }
         .background(Color("DarkBlue").ignoresSafeArea())
-        .onAppear {
-            soundVM.appendSoundsIfNeeded(soundVM.sleepSoundList)
-        }
     }
 }

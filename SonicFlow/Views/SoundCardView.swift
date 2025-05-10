@@ -1,44 +1,63 @@
-// MARK: - SoundCardView.swift
-
 import SwiftUI
 
 struct SoundCardView: View {
     let sound: Sound
-    let toggleAction: () -> Void
-    @State private var animate = false
+    let onPlayPause: () -> Void
+    @EnvironmentObject var soundVM: SoundPlayerViewModel
 
     var body: some View {
-        VStack(spacing: 10) {
+        HStack(spacing: 12) {
             Image(sound.imageName)
                 .resizable()
-                .aspectRatio(16/9, contentMode: .fill)
-                .frame(maxWidth: .infinity)
-                .frame(height: 140)
+                .scaledToFill()
+                .frame(width: 60, height: 60)
+                .cornerRadius(12)
                 .clipped()
-                .cornerRadius(14)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 14)
-                        .stroke(Color.white.opacity(0.1), lineWidth: 1)
-                )
 
-            HStack {
+            VStack(alignment: .leading, spacing: 4) {
                 Text(sound.name)
-                    .foregroundColor(.white)
                     .font(.headline)
-                Spacer()
-                Button(action: toggleAction) {
-                    Image(systemName: sound.isPlaying ? "pause.fill" : "play.fill")
-                        .foregroundColor(.white)
-                        .padding(8)
-                        .background(Color.blue.opacity(0.7))
-                        .clipShape(Circle())
+                    .foregroundColor(.white)
+
+                HStack(spacing: 16) {
+                    // Play/Pause
+                    Button(action: {
+                        withAnimation {
+                            onPlayPause()
+                        }
+                    }) {
+                        Image(systemName: sound.isPlaying ? "pause.fill" : "play.fill")
+                            .foregroundColor(.white)
+                            .font(.title3)
+                    }
+
+                    // Favorite
+                    Button(action: {
+                        withAnimation {
+                            soundVM.toggleFavorite(sound)
+                        }
+                    }) {
+                        Image(systemName: soundVM.favoriteSounds.contains(sound) ? "heart.fill" : "heart")
+                            .foregroundColor(.white)
+                            .font(.title3)
+                    }
+
+                    // Timer
+                    Button(action: {
+                        soundVM.currentSound = sound
+                        soundVM.showTimer = true
+                    }) {
+                        Image(systemName: "timer")
+                            .foregroundColor(.white)
+                            .font(.title3)
+                    }
                 }
             }
-            .padding(.horizontal, 8)
+
+            Spacer()
         }
-        .padding(8)
+        .padding()
         .background(Color.white.opacity(0.05))
         .cornerRadius(16)
-        .shadow(color: Color.black.opacity(0.1), radius: 6, x: 0, y: 2)
     }
 }
