@@ -4,6 +4,7 @@ import AVKit
 struct NewHomeView: View {
     @EnvironmentObject var soundVM: SoundPlayerViewModel
 
+    // Видео-плеер для фона
     private let oceanPlayer: AVPlayer = {
         guard let url = Bundle.main.url(forResource: "ocean", withExtension: "mp4") else {
             fatalError("Video file not found")
@@ -11,6 +12,7 @@ struct NewHomeView: View {
         let player = AVPlayer(url: url)
         player.isMuted = true
         player.actionAtItemEnd = .none
+
         NotificationCenter.default.addObserver(
             forName: .AVPlayerItemDidPlayToEndTime,
             object: player.currentItem,
@@ -19,26 +21,32 @@ struct NewHomeView: View {
             player.seek(to: .zero)
             player.play()
         }
+
         player.play()
         return player
     }()
 
     var body: some View {
         ZStack(alignment: .top) {
+            // Видео фон
             VideoPlayerView(player: oceanPlayer)
                 .frame(height: 300)
                 .ignoresSafeArea()
 
+            // Градиентный затемнённый эффект внизу видео
             LinearGradient(
-                gradient: Gradient(colors: [
-                    Color.black.opacity(0.2),
-                    Color("DarkBlue")
+                gradient: Gradient(stops: [
+                    .init(color: Color.black.opacity(0.8), location: 0.0),
+                    .init(color: Color.black.opacity(0.4), location: 0.5),
+                    .init(color: Color.clear, location: 1.0)
                 ]),
-                startPoint: .top,
-                endPoint: .bottom
+                startPoint: .bottom,
+                endPoint: .top
             )
+            .frame(height: 300)
             .ignoresSafeArea()
 
+            // Основной контент
             ScrollView {
                 VStack(spacing: 24) {
                     VStack(spacing: 4) {
@@ -82,18 +90,16 @@ struct NewHomeView: View {
                                 .foregroundColor(.white)
 
                             TabView {
-                                ForEach(soundVM.recentlyPlayed) { sound in
+                                ForEach(soundVM.recentlyPlayed.prefix(5)) { sound in
                                     SoundCardView(sound: sound) {
                                         soundVM.playExclusive(sound)
                                     }
-                                    .frame(width: UIScreen.main.bounds.width * 0.8)
-                                    .padding(.vertical, 10)
+                                    .padding(.horizontal, 32)
                                 }
                             }
-                            .frame(height: 160)
-                            .tabViewStyle(PageTabViewStyle(indexDisplayMode: .automatic))
+                            .frame(height: 140)
+                            .tabViewStyle(PageTabViewStyle(indexDisplayMode: .always))
                         }
-                        .padding(.horizontal)
                     }
 
                     if !soundVM.favoriteSounds.isEmpty {
@@ -103,18 +109,16 @@ struct NewHomeView: View {
                                 .foregroundColor(.white)
 
                             TabView {
-                                ForEach(soundVM.favoriteSounds) { sound in
+                                ForEach(soundVM.favoriteSounds.prefix(5)) { sound in
                                     SoundCardView(sound: sound) {
                                         soundVM.playExclusive(sound)
                                     }
-                                    .frame(width: UIScreen.main.bounds.width * 0.8)
-                                    .padding(.vertical, 10)
+                                    .padding(.horizontal, 32)
                                 }
                             }
-                            .frame(height: 160)
-                            .tabViewStyle(PageTabViewStyle(indexDisplayMode: .automatic))
+                            .frame(height: 140)
+                            .tabViewStyle(PageTabViewStyle(indexDisplayMode: .always))
                         }
-                        .padding(.horizontal)
                     }
 
                     Spacer()
