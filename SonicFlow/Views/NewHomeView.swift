@@ -11,7 +11,11 @@ struct NewHomeView: View {
         let player = AVPlayer(url: url)
         player.isMuted = true
         player.actionAtItemEnd = .none
-        NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: player.currentItem, queue: .main) { _ in
+        NotificationCenter.default.addObserver(
+            forName: .AVPlayerItemDidPlayToEndTime,
+            object: player.currentItem,
+            queue: .main
+        ) { _ in
             player.seek(to: .zero)
             player.play()
         }
@@ -26,7 +30,10 @@ struct NewHomeView: View {
                 .ignoresSafeArea()
 
             LinearGradient(
-                gradient: Gradient(colors: [Color.black.opacity(0.2), Color("DarkBlue")]),
+                gradient: Gradient(colors: [
+                    Color.black.opacity(0.2),
+                    Color("DarkBlue")
+                ]),
                 startPoint: .top,
                 endPoint: .bottom
             )
@@ -74,15 +81,19 @@ struct NewHomeView: View {
                                 .font(.headline)
                                 .foregroundColor(.white)
 
-                            VStack(spacing: 16) {
-                                ForEach(soundVM.recentlyPlayed.prefix(5)) { sound in
+                            TabView {
+                                ForEach(soundVM.recentlyPlayed) { sound in
                                     SoundCardView(sound: sound) {
                                         soundVM.playExclusive(sound)
                                     }
-                                    .padding(.horizontal)
+                                    .frame(width: UIScreen.main.bounds.width * 0.8)
+                                    .padding(.vertical, 10)
                                 }
                             }
+                            .frame(height: 160)
+                            .tabViewStyle(PageTabViewStyle(indexDisplayMode: .automatic))
                         }
+                        .padding(.horizontal)
                     }
 
                     if !soundVM.favoriteSounds.isEmpty {
@@ -91,15 +102,19 @@ struct NewHomeView: View {
                                 .font(.headline)
                                 .foregroundColor(.white)
 
-                            VStack(spacing: 16) {
+                            TabView {
                                 ForEach(soundVM.favoriteSounds) { sound in
                                     SoundCardView(sound: sound) {
                                         soundVM.playExclusive(sound)
                                     }
-                                    .padding(.horizontal)
+                                    .frame(width: UIScreen.main.bounds.width * 0.8)
+                                    .padding(.vertical, 10)
                                 }
                             }
+                            .frame(height: 160)
+                            .tabViewStyle(PageTabViewStyle(indexDisplayMode: .automatic))
                         }
+                        .padding(.horizontal)
                     }
 
                     Spacer()
