@@ -45,6 +45,7 @@ class SoundPlayerViewModel: ObservableObject {
 
     init() {
         setupAudioSession()
+        allSounds = allAvailableSounds
         loadRecentlyPlayed()
         loadFavoriteSounds()
     }
@@ -58,6 +59,14 @@ class SoundPlayerViewModel: ObservableObject {
         }
     }
 
+    func toggleSound(_ sound: Sound) {
+        if currentSound?.id == sound.id {
+            stopAllSounds()
+        } else {
+            playExclusive(sound)
+        }
+    }
+
     func playExclusive(_ sound: Sound) {
         stopAllSounds()
         playSound(sound)
@@ -65,7 +74,7 @@ class SoundPlayerViewModel: ObservableObject {
 
     private func playSound(_ sound: Sound) {
         guard let url = Bundle.main.url(forResource: sound.fileName, withExtension: "mp3") else {
-            print("File not found: \(sound.fileName).mp3")
+            print("❌ File not found: \(sound.fileName).mp3")
             return
         }
 
@@ -80,7 +89,7 @@ class SoundPlayerViewModel: ObservableObject {
             markSoundAsPlaying(sound)
             addToRecentlyPlayed(sound: sound)
         } catch {
-            print("Playback error: \(error.localizedDescription)")
+            print("❌ Playback error: \(error.localizedDescription)")
         }
     }
 
@@ -89,26 +98,6 @@ class SoundPlayerViewModel: ObservableObject {
         player = nil
         markAllSoundsAsStopped()
         currentSound = nil
-    }
-
-    func toggleSound(_ sound: Sound) {
-        if currentSound?.id == sound.id {
-            stopAllSounds()
-        } else {
-            playExclusive(sound)
-        }
-    }
-
-    private func markSoundAsPlaying(_ sound: Sound) {
-        allSounds.indices.forEach { index in
-            allSounds[index].isPlaying = allSounds[index].id == sound.id
-        }
-    }
-
-    private func markAllSoundsAsStopped() {
-        allSounds.indices.forEach { index in
-            allSounds[index].isPlaying = false
-        }
     }
 
     func setVolume(for sound: Sound, to volume: Float) {
@@ -122,9 +111,24 @@ class SoundPlayerViewModel: ObservableObject {
         }
     }
 
+    func toggleFavorite(_ sound: Sound) {
+        if favoriteSounds.contains(sound) {
+            favoriteSounds.removeAll { $0.id == sound.id }
+        } else {
+            favoriteSounds.append(sound)
+        }
+        saveFavoriteSounds()
+    }
+
+    var currentlyPlaying: Sound? {
+        return currentSound
+    }
+
+    // MARK: - Recently Played
+
     func addToRecentlyPlayed(sound: Sound) {
-        if let existing = recentlyPlayed.firstIndex(of: sound) {
-            recentlyPlayed.remove(at: existing)
+        if let index = recentlyPlayed.firstIndex(of: sound) {
+            recentlyPlayed.remove(at: index)
         }
         recentlyPlayed.insert(sound, at: 0)
         if recentlyPlayed.count > 5 {
@@ -133,31 +137,11 @@ class SoundPlayerViewModel: ObservableObject {
         saveRecentlyPlayed()
     }
 
-    func toggleFavorite(_ sound: Sound) {
-        if favoriteSounds.contains(sound) {
-            favoriteSounds.removeAll { $0 == sound }
-        } else {
-            favoriteSounds.append(sound)
-        }
-        saveFavoriteSounds()
-    }
-
-    func setTimer(minutes: Int) {
-        timer?.invalidate()
-        timer = Timer.scheduledTimer(withTimeInterval: TimeInterval(minutes * 60), repeats: false) { _ in
-            self.stopAllSounds()
-        }
-    }
+    // MARK: - Persistence
 
     private func saveRecentlyPlayed() {
         if let data = try? JSONEncoder().encode(recentlyPlayed) {
             UserDefaults.standard.set(data, forKey: "recentlyPlayed")
-        }
-    }
-
-    private func saveFavoriteSounds() {
-        if let data = try? JSONEncoder().encode(favoriteSounds) {
-            UserDefaults.standard.set(data, forKey: "favoriteSounds")
         }
     }
 
@@ -168,16 +152,39 @@ class SoundPlayerViewModel: ObservableObject {
         }
     }
 
+    private func saveFavoriteSounds() {
+        if let data = try? JSONEncoder().encode(favoriteSounds) {
+            UserDefaults.standard.set(data, forKey: "favoriteSounds")
+        }
+    }
+
     private func loadFavoriteSounds() {
         if let data = UserDefaults.standard.data(forKey: "favoriteSounds"),
            let saved = try? JSONDecoder().decode([Sound].self, from: data) {
             favoriteSounds = saved
         }
     }
-}
 
-extension Array {
-    subscript(safe index: Index) -> Element? {
-        return indices.contains(index) ? self[index] : nil
+    // MARK: - Timer
+
+    func setTimer(minutes: Int) {
+        timer?.invalidate()
+        timer = Timer.scheduledTimer(withTimeInterval: TimeInterval(minutes * 60), repeats: false) { _ in
+            self.stopAllSounds()
+        }
+    }
+
+    // MARK: - Helper
+
+    private func markSoundAsPlaying(_ sound: Sound) {
+        allSounds.indices.forEach { index in
+            allSounds[index].isPlaying = allSounds[index].id == sound.id
+        }
+    }
+
+    private func markAllSoundsAsStopped() {
+        allSounds.indices.forEach { index in
+            allSounds[index].isPlaying = false
+        }
     }
 }
