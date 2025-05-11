@@ -5,13 +5,13 @@ struct NewHomeView: View {
 
     var body: some View {
         ZStack {
-            // Фоновое видео
             VideoBackgroundView()
                 .edgesIgnoringSafeArea(.all)
 
             ScrollView {
                 VStack(spacing: 24) {
-                    // Логотип
+
+                    // MARK: - Logo Header
                     VStack(spacing: 6) {
                         Text("SONIC FLOW")
                             .font(.custom("Didot", size: 36))
@@ -28,7 +28,7 @@ struct NewHomeView: View {
                     }
                     .padding(.top, 60)
 
-                    // Приветствие
+                    // MARK: - Greeting Block
                     VStack(spacing: 8) {
                         Text("Hello, Dmytro 👋")
                             .font(.title2.bold())
@@ -55,7 +55,7 @@ struct NewHomeView: View {
                     .cornerRadius(24)
                     .padding(.horizontal, 24)
 
-                    // Playing Now Block
+                    // MARK: - Playing Now
                     if let current = soundVM.currentSound {
                         VStack(alignment: .leading, spacing: 12) {
                             Text("Playing Now")
@@ -70,32 +70,23 @@ struct NewHomeView: View {
                         }
                     }
 
-                    // Recently Played
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("You heard recently")
-                            .font(.headline)
-                            .foregroundColor(.white)
-                            .padding(.horizontal, 16)
-
-                        ZStack(alignment: .trailing) {
-                            ScrollView(.horizontal, showsIndicators: false) {
-                                HStack(spacing: 12) {
-                                    ForEach(soundVM.recentlyPlayed) { sound in
-                                        SoundCardView(sound: sound) {
-                                            soundVM.toggleSound(sound)
-                                        }
-                                    }
-                                }
+                    // MARK: - Recently Played
+                    if !soundVM.recentlyPlayed.isEmpty {
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("You heard recently")
+                                .font(.headline)
+                                .foregroundColor(.white)
                                 .padding(.horizontal, 16)
-                            }
 
-                            Image(systemName: "chevron.right")
-                                .foregroundColor(.white.opacity(0.4))
-                                .padding(.trailing, 8)
+                            CustomCarousel(items: soundVM.recentlyPlayed) { sound in
+                                SoundCardView(sound: sound) {
+                                    soundVM.toggleSound(sound)
+                                }
+                            }
                         }
                     }
 
-                    // Favorites
+                    // MARK: - Favorites
                     if !soundVM.favoriteSounds.isEmpty {
                         VStack(alignment: .leading, spacing: 12) {
                             Text("Favorites")
@@ -103,26 +94,15 @@ struct NewHomeView: View {
                                 .foregroundColor(.white)
                                 .padding(.horizontal, 16)
 
-                            ZStack(alignment: .trailing) {
-                                ScrollView(.horizontal, showsIndicators: false) {
-                                    HStack(spacing: 12) {
-                                        ForEach(soundVM.favoriteSounds) { sound in
-                                            SoundCardView(sound: sound) {
-                                                soundVM.toggleSound(sound)
-                                            }
-                                        }
-                                    }
-                                    .padding(.horizontal, 16)
+                            CustomCarousel(items: soundVM.favoriteSounds) { sound in
+                                SoundCardView(sound: sound) {
+                                    soundVM.toggleSound(sound)
                                 }
-
-                                Image(systemName: "chevron.right")
-                                    .foregroundColor(.white.opacity(0.4))
-                                    .padding(.trailing, 8)
                             }
                         }
-                        .padding(.bottom, 32)
                     }
                 }
+                .padding(.bottom, 40)
             }
         }
     }
