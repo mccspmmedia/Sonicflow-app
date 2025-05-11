@@ -3,12 +3,12 @@ import SwiftUI
 struct SoundCardView: View {
     let sound: Sound
     let toggleAction: () -> Void
+
     @EnvironmentObject var soundVM: SoundPlayerViewModel
     @State private var animate = false
 
     var body: some View {
         HStack(spacing: 16) {
-            // Изображение звука
             Image(sound.imageName)
                 .resizable()
                 .scaledToFill()
@@ -21,9 +21,7 @@ struct SoundCardView: View {
                     .font(.headline)
 
                 HStack(spacing: 12) {
-                    Button(action: {
-                        soundVM.toggleSound(sound)
-                    }) {
+                    Button(action: toggleAction) {
                         Image(systemName: "play.fill")
                             .foregroundColor(.white)
                             .padding(8)
@@ -64,13 +62,11 @@ struct SoundCardView: View {
                     }
                 }
             }
+
             Spacer()
         }
         .padding()
-        .background(Color.white.opacity(0.1))
-        .cornerRadius(16)
-        .onAppear {
-            animate = true
-        }
+        .background(Color(red: 12/255, green: 14/255, blue: 38/255).opacity(0.85))
+        .cornerRadius(20)
     }
 }

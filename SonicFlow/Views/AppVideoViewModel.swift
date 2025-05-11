@@ -7,8 +7,8 @@ class AppVideoViewModel: ObservableObject {
 
     init() {
         // Загружаем видео ocean.mp4 из основного бандла
-        guard let url = Bundle.main.url(forResource: "ocean", withExtension: "mp4") else {
-            fatalError("Video file 'ocean.mp4' not found in bundle.")
+        guard let url = Bundle.main.url(forResource: "ocean_background", withExtension: "mp4") else {
+            fatalError("Video file 'ocean_background.mp4' not found in bundle.")
         }
 
         // Инициализируем плеер

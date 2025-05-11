@@ -5,7 +5,7 @@ struct WelcomeView: View {
 
     var body: some View {
         if isLoggedIn {
-            MainHomeView()
+            NewHomeView() // заменили на новую домашнюю вьюшку
         } else {
             VStack(spacing: 32) {
                 Spacer()
@@ -33,10 +33,10 @@ struct WelcomeView: View {
                         .padding(.horizontal)
                 }
 
-                // Заглушки на кнопки
+                // Кнопки входа
                 VStack(spacing: 16) {
                     Button(action: {
-                        isLoggedIn = true // переход на MainHomeView
+                        isLoggedIn = true
                     }) {
                         HStack {
                             Image(systemName: "applelogo")
@@ -51,7 +51,7 @@ struct WelcomeView: View {
                     }
 
                     Button(action: {
-                        isLoggedIn = true // переход на MainHomeView
+                        isLoggedIn = true
                     }) {
                         HStack {
                             Image(systemName: "globe")
@@ -76,9 +76,12 @@ struct WelcomeView: View {
             }
             .padding()
             .background(
-                LinearGradient(colors: [Color.black, Color.blue.opacity(0.3)],
-                               startPoint: .topLeading, endPoint: .bottomTrailing)
-                    .ignoresSafeArea()
+                LinearGradient(
+                    colors: [Color.black, Color.blue.opacity(0.3)],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea()
             )
         }
     }
