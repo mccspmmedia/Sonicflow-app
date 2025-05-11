@@ -1,6 +1,9 @@
 import SwiftUI
 
 struct MainTabView: View {
+    @EnvironmentObject var soundVM: SoundPlayerViewModel
+    @EnvironmentObject var videoVM: AppVideoViewModel
+
     var body: some View {
         TabView {
             NewHomeView()
@@ -36,4 +39,10 @@ struct MainTabView: View {
         .accentColor(.white)
         .background(Color("DarkBlue").ignoresSafeArea())
     }
+}
+
+#Preview {
+    MainTabView()
+        .environmentObject(SoundPlayerViewModel())
+        .environmentObject(AppVideoViewModel())
 }
