@@ -11,13 +11,24 @@ class SoundPlayerViewModel: ObservableObject {
     private var player: AVAudioPlayer?
     private var timer: Timer?
 
+    // MARK: - Nature Sounds
     let natureSoundList: [Sound] = [
         Sound(name: "Ocean", fileName: "sea", imageName: "sea"),
         Sound(name: "Forest", fileName: "forest", imageName: "forest"),
         Sound(name: "Campfire", fileName: "fire", imageName: "fire"),
-        Sound(name: "Rain", fileName: "rain", imageName: "rain")
+        Sound(name: "Rain", fileName: "rain", imageName: "rain"),
+        Sound(name: "Rain with Thunder", fileName: "rain_thunder", imageName: "rain_thunder"),
+        Sound(name: "Rain in Forest", fileName: "rain_forest", imageName: "rain_forest"),
+        Sound(name: "Rain in Tent", fileName: "rain_tent", imageName: "rain_tent"),
+        Sound(name: "Storm", fileName: "storm", imageName: "storm"),
+        Sound(name: "Waterfall", fileName: "waterfall", imageName: "waterfall"),
+        Sound(name: "Wind", fileName: "wind", imageName: "wind"),
+        Sound(name: "Snow Footsteps", fileName: "snow_steps", imageName: "snow_steps"),
+        Sound(name: "Stream", fileName: "stream", imageName: "stream"),
+        Sound(name: "Jungle", fileName: "jungle", imageName: "jungle")
     ]
 
+    // MARK: - Sleep Sounds
     let sleepSoundList: [Sound] = [
         Sound(name: "White Noise", fileName: "white_noise", imageName: "white_noise"),
         Sound(name: "Crickets at Night", fileName: "crickets", imageName: "crickets"),
@@ -25,6 +36,7 @@ class SoundPlayerViewModel: ObservableObject {
         Sound(name: "Breathing Sound", fileName: "breathing", imageName: "breathing")
     ]
 
+    // MARK: - Ambience Sounds
     let ambienceSoundList: [Sound] = [
         Sound(name: "Cafe", fileName: "cafe", imageName: "cafe"),
         Sound(name: "Library", fileName: "library", imageName: "library"),
@@ -32,6 +44,7 @@ class SoundPlayerViewModel: ObservableObject {
         Sound(name: "Train", fileName: "train", imageName: "train")
     ]
 
+    // MARK: - Meditation Sounds
     let meditationSoundList: [Sound] = [
         Sound(name: "Deep Focus", fileName: "deep_focus", imageName: "deep_focus"),
         Sound(name: "Calm Mind", fileName: "calm_mind", imageName: "calm_mind"),
