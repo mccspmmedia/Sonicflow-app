@@ -5,7 +5,7 @@ struct MainTabView: View {
 
     var body: some View {
         TabView(selection: $selectedTab) {
-
+            
             NewHomeView()
                 .tabItem {
                     Image(systemName: "house.fill")
@@ -15,14 +15,14 @@ struct MainTabView: View {
 
             NatureView()
                 .tabItem {
-                    Image(systemName: "leaf")
+                    Image(systemName: "leaf.fill")
                     Text("Nature")
                 }
                 .tag(1)
 
             SleepView()
                 .tabItem {
-                    Image(systemName: "moon.zzz")
+                    Image(systemName: "moon.fill")
                     Text("Sleep")
                 }
                 .tag(2)
@@ -43,7 +43,11 @@ struct MainTabView: View {
         }
         .accentColor(.white)
         .onAppear {
-            UITabBar.appearance().barTintColor = UIColor(Color("DarkBlue"))
+            let appearance = UITabBarAppearance()
+            appearance.configureWithOpaqueBackground()
+            appearance.backgroundColor = UIColor(named: "DarkBlue")
+            UITabBar.appearance().standardAppearance = appearance
+            UITabBar.appearance().scrollEdgeAppearance = appearance
         }
     }
 }

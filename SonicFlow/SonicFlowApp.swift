@@ -13,7 +13,7 @@ struct SonicFlowApp: App {
 
     var body: some Scene {
         WindowGroup {
-            MainTabView()
+            WelcomeView() // теперь первым показывается WelcomeView
                 .environmentObject(soundVM)
                 .environmentObject(videoVM)
                 .preferredColorScheme(.dark)
@@ -23,7 +23,7 @@ struct SonicFlowApp: App {
 
 // ✅ Превью (используется только в SwiftUI Preview Canvas)
 #Preview {
-    MainTabView()
+    WelcomeView()
         .environmentObject(SoundPlayerViewModel())
         .environmentObject(AppVideoViewModel())
 }
