@@ -7,6 +7,9 @@ struct ReminderBlockView: View {
     var setReminder: () -> Void
     var cancelReminder: () -> Void
 
+    @State private var showTimePicker = false
+    @State private var tempSelectedTime = Date()
+
     var body: some View {
         VStack(spacing: 12) {
             Text("Hello, Dmytro ✨")
@@ -38,26 +41,9 @@ struct ReminderBlockView: View {
                 }
                 .padding(.top, 4)
             } else {
-                DatePicker("", selection: $selectedTime, displayedComponents: .hourAndMinute)
-                    .labelsHidden()
-                    .datePickerStyle(WheelDatePickerStyle())
-                    .frame(maxWidth: .infinity)
-
                 Button(action: {
-                    NotificationManager.shared.requestAuthorizationIfNeeded { granted in
-                        if granted {
-                            NotificationManager.shared.scheduleNotification(
-                                at: selectedTime,
-                                title: "Take a mindful break",
-                                body: "Relax and enjoy your favorite calming sounds"
-                            )
-                            DispatchQueue.main.async {
-                                setReminder()
-                            }
-                        } else {
-                            print("❌ Permission not granted for notifications")
-                        }
-                    }
+                    tempSelectedTime = selectedTime
+                    showTimePicker = true
                 }) {
                     Text("Set Reminder")
                         .foregroundColor(.blue)
@@ -70,6 +56,38 @@ struct ReminderBlockView: View {
         .background(Color(red: 12/255, green: 14/255, blue: 38/255).opacity(0.85))
         .cornerRadius(24)
         .padding(.horizontal, 24)
+        .sheet(isPresented: $showTimePicker) {
+            VStack(spacing: 24) {
+                Text("Select Time")
+                    .font(.headline)
+
+                DatePicker("", selection: $tempSelectedTime, displayedComponents: .hourAndMinute)
+                    .datePickerStyle(WheelDatePickerStyle())
+                    .labelsHidden()
+
+                Button("Confirm") {
+                    NotificationManager.shared.requestAuthorizationIfNeeded { granted in
+                        if granted {
+                            NotificationManager.shared.scheduleNotification(
+                                at: tempSelectedTime,
+                                title: "Take a mindful break",
+                                body: "Relax and enjoy your favorite calming sounds"
+                            )
+                            DispatchQueue.main.async {
+                                selectedTime = tempSelectedTime
+                                setReminder()
+                                showTimePicker = false
+                            }
+                        } else {
+                            print("❌ Permission not granted for notifications")
+                        }
+                    }
+                }
+                .foregroundColor(.blue)
+                .padding(.bottom)
+            }
+            .presentationDetents([.fraction(0.3)])
+        }
     }
 
     private func formattedTime(_ date: Date) -> String {
