@@ -1,15 +1,10 @@
 import SwiftUI
-import AVFoundation
-import AudioToolbox
 
 struct TimerPopupView: View {
     @EnvironmentObject var soundVM: SoundPlayerViewModel
     @Environment(\.dismiss) var dismiss
 
     @State private var selectedMinutes: Int = 10
-    @State private var timeRemaining: Int = 0
-    @State private var timerRunning = false
-    @State private var timer: Timer?
 
     var body: some View {
         VStack(spacing: 24) {
@@ -17,29 +12,47 @@ struct TimerPopupView: View {
                 .font(.title2.bold())
                 .foregroundColor(.white)
 
-            Picker("Minutes", selection: $selectedMinutes) {
-                ForEach([5, 10, 15, 30, 45, 60], id: \.self) { minute in
-                    Text("\(minute) minutes").tag(minute)
-                }
-            }
-            .pickerStyle(WheelPickerStyle())
-            .frame(height: 100)
+            if soundVM.isTimerRunning {
+                VStack(spacing: 8) {
+                    Text("Time Remaining")
+                        .foregroundColor(.white.opacity(0.7))
+                        .font(.caption)
 
-            Button(action: {
-                startTimer()
-                dismiss()
-            }) {
-                Text("Start Timer")
-                    .font(.headline)
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.blue.opacity(0.9))
-                    .cornerRadius(12)
+                    Text(formattedTime(soundVM.timeRemaining))
+                        .font(.largeTitle.monospacedDigit())
+                        .foregroundColor(.green)
+                }
+
+                Button("Stop Timer") {
+                    soundVM.cancelCountdown()
+                    dismiss()
+                }
+                .foregroundColor(.red)
+                .padding(.top)
+            } else {
+                Picker("Minutes", selection: $selectedMinutes) {
+                    ForEach([5, 10, 15, 30, 45, 60], id: \.self) { minute in
+                        Text("\(minute) minutes").tag(minute)
+                    }
+                }
+                .pickerStyle(WheelPickerStyle())
+                .frame(height: 100)
+
+                Button(action: {
+                    soundVM.startCountdown(minutes: selectedMinutes)
+                    dismiss()
+                }) {
+                    Text("Start Timer")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.blue.opacity(0.9))
+                        .cornerRadius(12)
+                }
             }
 
             Button("Cancel") {
-                cancelTimer()
                 dismiss()
             }
             .foregroundColor(.gray)
@@ -48,39 +61,11 @@ struct TimerPopupView: View {
         .background(Color("DarkBlue").opacity(0.95))
         .cornerRadius(24)
         .padding()
-        .onDisappear {
-            cancelTimer()
-        }
     }
 
-    private func startTimer() {
-        timeRemaining = selectedMinutes * 60
-        timerRunning = true
-
-        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
-            if timeRemaining > 0 {
-                timeRemaining -= 1
-
-                if timeRemaining <= 10 {
-                    let volumeFactor = Float(timeRemaining) / 10.0
-                    if let current = soundVM.currentSound {
-                        soundVM.setVolume(for: current, to: volumeFactor)
-                    }
-                }
-            } else {
-                timer?.invalidate()
-                timer = nil
-                timerRunning = false
-                soundVM.stopAllSounds()
-                AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
-            }
-        }
-    }
-
-    private func cancelTimer() {
-        timer?.invalidate()
-        timer = nil
-        timerRunning = false
-        timeRemaining = 0
+    private func formattedTime(_ seconds: Int) -> String {
+        let mins = seconds / 60
+        let secs = seconds % 60
+        return String(format: "%02d:%02d", mins, secs)
     }
 }

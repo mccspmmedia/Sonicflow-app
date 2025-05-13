@@ -5,6 +5,8 @@ struct NewHomeView: View {
 
     @State private var reminderDate: Date = Date()
     @State private var isReminderSet: Bool = false
+    @State private var showTimerPopup = false
+    @State private var selectedSoundForTimer: Sound? = nil
 
     var body: some View {
         ZStack {
@@ -61,8 +63,11 @@ struct NewHomeView: View {
                                 .foregroundColor(.white)
                                 .padding(.horizontal, 16)
 
-                            SoundCardView(sound: current)
-                                .padding(.horizontal, 16)
+                            SoundCardView(sound: current, onTimerTap: {
+                                selectedSoundForTimer = current
+                                showTimerPopup = true
+                            })
+                            .padding(.horizontal, 16)
                         }
                     }
 
@@ -75,7 +80,10 @@ struct NewHomeView: View {
                                 .padding(.horizontal, 16)
 
                             CustomCarousel(items: soundVM.recentlyPlayed) { sound in
-                                SoundCardView(sound: sound)
+                                SoundCardView(sound: sound, onTimerTap: {
+                                    selectedSoundForTimer = sound
+                                    showTimerPopup = true
+                                })
                             }
                         }
                     }
@@ -89,12 +97,21 @@ struct NewHomeView: View {
                                 .padding(.horizontal, 16)
 
                             CustomCarousel(items: soundVM.favoriteSounds) { sound in
-                                SoundCardView(sound: sound)
+                                SoundCardView(sound: sound, onTimerTap: {
+                                    selectedSoundForTimer = sound
+                                    showTimerPopup = true
+                                })
                             }
                         }
                     }
                 }
                 .padding(.bottom, 40)
+            }
+        }
+        .sheet(isPresented: $showTimerPopup) {
+            if let _ = selectedSoundForTimer {
+                TimerPopupView()
+                    .environmentObject(soundVM)
             }
         }
     }

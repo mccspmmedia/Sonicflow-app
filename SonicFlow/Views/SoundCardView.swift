@@ -2,9 +2,9 @@ import SwiftUI
 
 struct SoundCardView: View {
     let sound: Sound
+    var onTimerTap: () -> Void
 
     @EnvironmentObject var soundVM: SoundPlayerViewModel
-    @State private var animate = false
 
     var body: some View {
         HStack(spacing: 16) {
@@ -68,7 +68,7 @@ struct SoundCardView: View {
 
                     // ⏲ Timer
                     Button(action: {
-                        soundVM.showTimer = true
+                        onTimerTap()
                     }) {
                         Image(systemName: "timer")
                             .foregroundColor(.white)

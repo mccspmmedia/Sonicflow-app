@@ -1,5 +1,6 @@
 import Foundation
 import AVFoundation
+import AudioToolbox
 
 class SoundPlayerViewModel: ObservableObject {
     @Published var allSounds: [Sound] = []
@@ -7,6 +8,9 @@ class SoundPlayerViewModel: ObservableObject {
     @Published var favoriteSounds: [Sound] = []
     @Published var currentSound: Sound? = nil
     @Published var showTimer: Bool = false
+
+    @Published var isTimerRunning: Bool = false
+    @Published var timeRemaining: Int = 0
 
     private var player: AVAudioPlayer?
     private var timer: Timer?
@@ -112,11 +116,45 @@ class SoundPlayerViewModel: ObservableObject {
         }
     }
 
-    // MARK: - Volume Control (for TimerView)
+    // MARK: - Volume Control (for Timer)
     func setVolume(for sound: Sound, to volume: Float) {
         if currentSound?.id == sound.id {
             player?.volume = volume
         }
+    }
+
+    // MARK: - Timer Countdown
+    func startCountdown(minutes: Int) {
+        timer?.invalidate()
+        timeRemaining = minutes * 60
+        isTimerRunning = true
+
+        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
+            guard let self = self else { return }
+
+            if self.timeRemaining > 0 {
+                self.timeRemaining -= 1
+
+                if self.timeRemaining <= 10, let sound = self.currentSound {
+                    let volumeFactor = Float(self.timeRemaining) / 10.0
+                    self.setVolume(for: sound, to: volumeFactor)
+                }
+            } else {
+                self.timer?.invalidate()
+                self.timer = nil
+                self.isTimerRunning = false
+                self.timeRemaining = 0
+                self.stopAllSounds()
+                AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
+            }
+        }
+    }
+
+    func cancelCountdown() {
+        timer?.invalidate()
+        timer = nil
+        isTimerRunning = false
+        timeRemaining = 0
     }
 
     // MARK: - Favorites
@@ -127,14 +165,6 @@ class SoundPlayerViewModel: ObservableObject {
             favoriteSounds.append(sound)
         }
         saveFavoriteSounds()
-    }
-
-    // MARK: - Timer
-    func setTimer(minutes: Int) {
-        timer?.invalidate()
-        timer = Timer.scheduledTimer(withTimeInterval: TimeInterval(minutes * 60), repeats: false) { _ in
-            self.stopAllSounds()
-        }
     }
 
     // MARK: - Recently Played
