@@ -125,6 +125,14 @@ class SoundPlayerViewModel: ObservableObject {
 
     // MARK: - Timer Countdown
     func startCountdown(minutes: Int) {
+        // Защита от ситуации, когда currentSound ещё не установлен
+        guard currentSound != nil else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                self.startCountdown(minutes: minutes)
+            }
+            return
+        }
+
         timer?.invalidate()
         timeRemaining = minutes * 60
         isTimerRunning = true

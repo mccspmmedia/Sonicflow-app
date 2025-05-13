@@ -2,8 +2,7 @@ import SwiftUI
 
 struct MeditationView: View {
     @EnvironmentObject var soundVM: SoundPlayerViewModel
-    @State private var showTimerPopup = false
-    @State private var selectedSoundForTimer: Sound? = nil
+    @State private var selectedSoundForTimer: Sound?
 
     var body: some View {
         ScrollView {
@@ -17,7 +16,6 @@ struct MeditationView: View {
                     ForEach(soundVM.meditationSoundList) { sound in
                         SoundCardView(sound: sound, onTimerTap: {
                             selectedSoundForTimer = sound
-                            showTimerPopup = true
                         })
                         .background(
                             Color(red: 12/255, green: 14/255, blue: 38/255).opacity(0.8)
@@ -31,11 +29,9 @@ struct MeditationView: View {
             .padding()
         }
         .background(Color("DarkBlue").ignoresSafeArea())
-        .sheet(isPresented: $showTimerPopup) {
-            if let _ = selectedSoundForTimer {
-                TimerPopupView()
-                    .environmentObject(soundVM)
-            }
+        .sheet(item: $selectedSoundForTimer) { _ in
+            TimerPopupView()
+                .environmentObject(soundVM)
         }
     }
 }
