@@ -4,57 +4,50 @@ import UserNotifications
 class NotificationManager {
     static let shared = NotificationManager()
 
-    private let reminderTimeKey = "reminderTime"
-    private let notificationEnabledKey = "notificationEnabled"
-
     private init() {}
 
-    func requestAuthorization(completion: @escaping (Bool) -> Void) {
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { granted, _ in
-            DispatchQueue.main.async {
-                completion(granted)
+    func requestAuthorizationIfNeeded(completion: @escaping (Bool) -> Void) {
+        let center = UNUserNotificationCenter.current()
+        center.getNotificationSettings { settings in
+            switch settings.authorizationStatus {
+            case .notDetermined:
+                center.requestAuthorization(options: [.alert, .sound]) { granted, _ in
+                    DispatchQueue.main.async {
+                        completion(granted)
+                    }
+                }
+            case .authorized, .provisional:
+                DispatchQueue.main.async {
+                    completion(true)
+                }
+            default:
+                DispatchQueue.main.async {
+                    completion(false)
+                }
             }
         }
     }
 
-    func scheduleNotification(at time: Date, title: String, body: String) {
-        cancelAllNotifications()
-
+    func scheduleNotification(at date: Date, title: String, body: String) {
         let content = UNMutableNotificationContent()
         content.title = title
         content.body = body
         content.sound = .default
 
-        var dateComponents = Calendar.current.dateComponents([.hour, .minute], from: time)
-        dateComponents.second = 0
+        let calendar = Calendar.current
+        let components = calendar.dateComponents([.hour, .minute], from: date)
 
-        let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
-        let request = UNNotificationRequest(identifier: "dailyReminder", content: content, trigger: trigger)
+        let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: true)
+        let request = UNNotificationRequest(identifier: "daily_reminder", content: content, trigger: trigger)
 
-        UNUserNotificationCenter.current().add(request)
-
-        // Save preferences
-        UserDefaults.standard.set(true, forKey: notificationEnabledKey)
-        UserDefaults.standard.set(time, forKey: reminderTimeKey)
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error = error {
+                print("Error scheduling notification: \(error.localizedDescription)")
+            }
+        }
     }
 
     func cancelAllNotifications() {
         UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
-        UserDefaults.standard.set(false, forKey: notificationEnabledKey)
-    }
-
-    func isNotificationEnabled() -> Bool {
-        return UserDefaults.standard.bool(forKey: notificationEnabledKey)
-    }
-
-    func getReminderTime() -> Date {
-        return UserDefaults.standard.object(forKey: reminderTimeKey) as? Date ?? defaultTime()
-    }
-
-    private func defaultTime() -> Date {
-        var components = DateComponents()
-        components.hour = 20
-        components.minute = 0
-        return Calendar.current.date(from: components) ?? Date()
     }
 }

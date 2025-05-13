@@ -8,7 +8,7 @@ struct WelcomeView: View {
 
     var body: some View {
         if isLoggedIn {
-            MainTabView() // Показываем полное приложение с меню
+            MainTabView()
         } else {
             VStack(spacing: 32) {
                 Spacer()
@@ -47,7 +47,11 @@ struct WelcomeView: View {
                         onCompletion: { result in
                             switch result {
                             case .success:
-                                isLoggedIn = true
+                                NotificationManager.shared.requestAuthorizationIfNeeded { _ in
+                                    DispatchQueue.main.async {
+                                        isLoggedIn = true
+                                    }
+                                }
                             case .failure(let error):
                                 print("Apple Sign-In failed: \(error.localizedDescription)")
                             }
@@ -100,7 +104,11 @@ struct WelcomeView: View {
             }
 
             if result != nil {
-                isLoggedIn = true
+                NotificationManager.shared.requestAuthorizationIfNeeded { _ in
+                    DispatchQueue.main.async {
+                        isLoggedIn = true
+                    }
+                }
             }
         }
     }

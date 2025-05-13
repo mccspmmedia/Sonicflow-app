@@ -3,6 +3,9 @@ import SwiftUI
 struct NewHomeView: View {
     @EnvironmentObject var soundVM: SoundPlayerViewModel
 
+    @State private var reminderDate: Date = Date()
+    @State private var isReminderSet: Bool = false
+
     var body: some View {
         ZStack {
             VideoBackgroundView()
@@ -28,32 +31,27 @@ struct NewHomeView: View {
                     }
                     .padding(.top, 60)
 
-                    // MARK: - Greeting Block
-                    VStack(spacing: 8) {
-                        Text("Hello, Dmytro 👋")
-                            .font(.title2.bold())
-                            .foregroundColor(.white)
-
-                        Text("Enable reminders to relax")
-                            .font(.subheadline)
-                            .foregroundColor(.white)
-
-                        Text("Get notified daily to unwind and enjoy calming sounds")
-                            .font(.footnote)
-                            .foregroundColor(.white.opacity(0.8))
-
-                        Button(action: {
-                            // reminder logic
-                        }) {
-                            Text("Set Reminder")
-                                .foregroundColor(.blue)
-                                .bold()
+                    // MARK: - Reminder Block
+                    ReminderBlockView(
+                        selectedTime: $reminderDate,
+                        isReminderSet: $isReminderSet,
+                        setReminder: {
+                            NotificationManager.shared.requestAuthorizationIfNeeded { granted in
+                                if granted {
+                                    NotificationManager.shared.scheduleNotification(
+                                        at: reminderDate,
+                                        title: "Time to relax",
+                                        body: "Take a moment to enjoy peaceful sounds."
+                                    )
+                                    isReminderSet = true
+                                }
+                            }
+                        },
+                        cancelReminder: {
+                            NotificationManager.shared.cancelAllNotifications()
+                            isReminderSet = false
                         }
-                    }
-                    .padding()
-                    .background(Color(red: 12/255, green: 14/255, blue: 38/255).opacity(0.85))
-                    .cornerRadius(24)
-                    .padding(.horizontal, 24)
+                    )
 
                     // MARK: - Playing Now
                     if let current = soundVM.currentSound {
@@ -63,10 +61,8 @@ struct NewHomeView: View {
                                 .foregroundColor(.white)
                                 .padding(.horizontal, 16)
 
-                            SoundCardView(sound: current) {
-                                soundVM.toggleSound(current)
-                            }
-                            .padding(.horizontal, 16)
+                            SoundCardView(sound: current)
+                                .padding(.horizontal, 16)
                         }
                     }
 
@@ -79,9 +75,7 @@ struct NewHomeView: View {
                                 .padding(.horizontal, 16)
 
                             CustomCarousel(items: soundVM.recentlyPlayed) { sound in
-                                SoundCardView(sound: sound) {
-                                    soundVM.toggleSound(sound)
-                                }
+                                SoundCardView(sound: sound)
                             }
                         }
                     }
@@ -95,9 +89,7 @@ struct NewHomeView: View {
                                 .padding(.horizontal, 16)
 
                             CustomCarousel(items: soundVM.favoriteSounds) { sound in
-                                SoundCardView(sound: sound) {
-                                    soundVM.toggleSound(sound)
-                                }
+                                SoundCardView(sound: sound)
                             }
                         }
                     }

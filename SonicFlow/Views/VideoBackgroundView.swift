@@ -3,7 +3,8 @@ import AVKit
 
 struct VideoBackgroundView: UIViewControllerRepresentable {
     class Coordinator {
-        var observer: NSObjectProtocol?
+        var observerEnd: NSObjectProtocol?
+        var observerResume: NSObjectProtocol?
     }
 
     private let player: AVPlayer = {
@@ -27,13 +28,25 @@ struct VideoBackgroundView: UIViewControllerRepresentable {
         controller.videoGravity = .resizeAspectFill
         controller.view.backgroundColor = .clear
 
-        context.coordinator.observer = NotificationCenter.default.addObserver(
+        // 🔁 Зацикливание видео
+        context.coordinator.observerEnd = NotificationCenter.default.addObserver(
             forName: .AVPlayerItemDidPlayToEndTime,
             object: player.currentItem,
             queue: .main
         ) { _ in
             self.player.seek(to: .zero)
             self.player.play()
+        }
+
+        // ✅ Возобновление при возвращении в приложение
+        context.coordinator.observerResume = NotificationCenter.default.addObserver(
+            forName: UIApplication.didBecomeActiveNotification,
+            object: nil,
+            queue: .main
+        ) { _ in
+            if self.player.timeControlStatus != .playing {
+                self.player.play()
+            }
         }
 
         player.seek(to: .zero)
@@ -43,13 +56,16 @@ struct VideoBackgroundView: UIViewControllerRepresentable {
     }
 
     func updateUIViewController(_ uiViewController: AVPlayerViewController, context: Context) {
-        // No update needed
+        // No-op
     }
 
     static func dismantleUIViewController(_ uiViewController: AVPlayerViewController, coordinator: Coordinator) {
         uiViewController.player?.pause()
-        if let observer = coordinator.observer {
-            NotificationCenter.default.removeObserver(observer)
+        if let observerEnd = coordinator.observerEnd {
+            NotificationCenter.default.removeObserver(observerEnd)
+        }
+        if let observerResume = coordinator.observerResume {
+            NotificationCenter.default.removeObserver(observerResume)
         }
     }
 }

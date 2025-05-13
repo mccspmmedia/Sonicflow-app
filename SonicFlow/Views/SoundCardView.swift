@@ -2,7 +2,6 @@ import SwiftUI
 
 struct SoundCardView: View {
     let sound: Sound
-    let toggleAction: () -> Void
 
     @EnvironmentObject var soundVM: SoundPlayerViewModel
     @State private var animate = false
@@ -21,7 +20,10 @@ struct SoundCardView: View {
                     .font(.headline)
 
                 HStack(spacing: 12) {
-                    Button(action: toggleAction) {
+                    // ▶️ Play
+                    Button(action: {
+                        soundVM.play(sound)
+                    }) {
                         Image(systemName: "play.fill")
                             .foregroundColor(.white)
                             .padding(8)
@@ -29,8 +31,9 @@ struct SoundCardView: View {
                             .clipShape(Circle())
                     }
 
+                    // ⏸ Pause
                     Button(action: {
-                        soundVM.stopAllSounds()
+                        soundVM.pauseCurrentSound()
                     }) {
                         Image(systemName: "pause.fill")
                             .foregroundColor(.white)
@@ -39,6 +42,18 @@ struct SoundCardView: View {
                             .clipShape(Circle())
                     }
 
+                    // ⏹ Stop
+                    Button(action: {
+                        soundVM.stopAllSounds()
+                    }) {
+                        Image(systemName: "stop.fill")
+                            .foregroundColor(.white)
+                            .padding(8)
+                            .background(Color.black.opacity(0.7))
+                            .clipShape(Circle())
+                    }
+
+                    // ❤️ Favorite
                     Button(action: {
                         withAnimation {
                             soundVM.toggleFavorite(sound)
@@ -51,6 +66,7 @@ struct SoundCardView: View {
                             .clipShape(Circle())
                     }
 
+                    // ⏲ Timer
                     Button(action: {
                         soundVM.showTimer = true
                     }) {

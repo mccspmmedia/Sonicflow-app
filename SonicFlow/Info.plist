@@ -18,5 +18,8 @@
             </array>
         </dict>
     </array>
+
+    <key>NSUserNotificationUsageDescription</key>
+    <string>We use notifications to remind you to relax and listen to calming sounds.</string>
 </dict>
 </plist>
