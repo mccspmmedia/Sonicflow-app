@@ -49,7 +49,7 @@ struct SoundCardView: View {
                         Image(systemName: "stop.fill")
                             .foregroundColor(.white)
                             .padding(8)
-                            .background(Color.black.opacity(0.7))
+                            .background(Color.yellow.opacity(0.7))
                             .clipShape(Circle())
                     }
 
