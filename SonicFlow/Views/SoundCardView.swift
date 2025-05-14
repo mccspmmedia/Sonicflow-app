@@ -16,11 +16,10 @@ struct SoundCardView: View {
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(sound.name)
-                    .foregroundColor(.white)
+                    .foregroundColor(.black)
                     .font(.headline)
 
                 HStack(spacing: 12) {
-                    // ▶️ Play
                     Button(action: {
                         soundVM.play(sound)
                     }) {
@@ -31,7 +30,6 @@ struct SoundCardView: View {
                             .clipShape(Circle())
                     }
 
-                    // ⏸ Pause
                     Button(action: {
                         soundVM.pauseCurrentSound()
                     }) {
@@ -42,7 +40,6 @@ struct SoundCardView: View {
                             .clipShape(Circle())
                     }
 
-                    // ⏹ Stop
                     Button(action: {
                         soundVM.stopAllSounds()
                     }) {
@@ -53,7 +50,6 @@ struct SoundCardView: View {
                             .clipShape(Circle())
                     }
 
-                    // ❤️ Favorite
                     Button(action: {
                         withAnimation {
                             soundVM.toggleFavorite(sound)
@@ -66,7 +62,6 @@ struct SoundCardView: View {
                             .clipShape(Circle())
                     }
 
-                    // ⏲ Timer
                     Button(action: {
                         onTimerTap()
                     }) {
@@ -82,7 +77,8 @@ struct SoundCardView: View {
             Spacer()
         }
         .padding()
-        .background(Color(red: 12/255, green: 14/255, blue: 38/255).opacity(0.85))
+        .background(Color.white)
         .cornerRadius(20)
+        .shadow(color: Color.black.opacity(0.05), radius: 4, x: 0, y: 4)
     }
 }

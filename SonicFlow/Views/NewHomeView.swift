@@ -63,7 +63,7 @@ struct NewHomeView: View {
                                 .foregroundColor(.white)
                                 .padding(.horizontal, 16)
 
-                            SoundCardView(sound: current, onTimerTap: {
+                            CompactSoundCardView(sound: current, onTimerTap: {
                                 selectedSoundForTimer = current
                                 showTimerPopup = true
                             })
@@ -80,7 +80,7 @@ struct NewHomeView: View {
                                 .padding(.horizontal, 16)
 
                             CustomCarousel(items: soundVM.recentlyPlayed) { sound in
-                                SoundCardView(sound: sound, onTimerTap: {
+                                CompactSoundCardView(sound: sound, onTimerTap: {
                                     selectedSoundForTimer = sound
                                     showTimerPopup = true
                                 })
@@ -97,7 +97,7 @@ struct NewHomeView: View {
                                 .padding(.horizontal, 16)
 
                             CustomCarousel(items: soundVM.favoriteSounds) { sound in
-                                SoundCardView(sound: sound, onTimerTap: {
+                                CompactSoundCardView(sound: sound, onTimerTap: {
                                     selectedSoundForTimer = sound
                                     showTimerPopup = true
                                 })
