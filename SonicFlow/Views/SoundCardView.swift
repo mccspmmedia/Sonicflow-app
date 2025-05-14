@@ -3,6 +3,7 @@ import SwiftUI
 struct SoundCardView: View {
     let sound: Sound
     var onTimerTap: () -> Void
+    var isDarkStyle: Bool = true // 🔹 Новый параметр
 
     @EnvironmentObject var soundVM: SoundPlayerViewModel
 
@@ -16,7 +17,7 @@ struct SoundCardView: View {
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(sound.name)
-                    .foregroundColor(.black)
+                    .foregroundColor(isDarkStyle ? .white : .black)
                     .font(.headline)
 
                 HStack(spacing: 12) {
@@ -26,7 +27,7 @@ struct SoundCardView: View {
                         Image(systemName: "play.fill")
                             .foregroundColor(.white)
                             .padding(8)
-                            .background(Color.blue.opacity(0.7))
+                            .background(isDarkStyle ? Color.blue.opacity(0.7) : Color.blue)
                             .clipShape(Circle())
                     }
 
@@ -36,7 +37,7 @@ struct SoundCardView: View {
                         Image(systemName: "pause.fill")
                             .foregroundColor(.white)
                             .padding(8)
-                            .background(Color.red.opacity(0.7))
+                            .background(isDarkStyle ? Color.red.opacity(0.7) : Color.red)
                             .clipShape(Circle())
                     }
 
@@ -46,7 +47,7 @@ struct SoundCardView: View {
                         Image(systemName: "stop.fill")
                             .foregroundColor(.white)
                             .padding(8)
-                            .background(Color.yellow.opacity(0.7))
+                            .background(isDarkStyle ? Color.yellow.opacity(0.7) : Color.yellow)
                             .clipShape(Circle())
                     }
 
@@ -58,7 +59,7 @@ struct SoundCardView: View {
                         Image(systemName: soundVM.favoriteSounds.contains(sound) ? "heart.fill" : "heart")
                             .foregroundColor(.white)
                             .padding(8)
-                            .background(Color.pink.opacity(0.7))
+                            .background(isDarkStyle ? Color.pink.opacity(0.7) : Color.pink)
                             .clipShape(Circle())
                     }
 
@@ -68,7 +69,7 @@ struct SoundCardView: View {
                         Image(systemName: "timer")
                             .foregroundColor(.white)
                             .padding(8)
-                            .background(Color.orange.opacity(0.7))
+                            .background(isDarkStyle ? Color.orange.opacity(0.7) : Color.orange)
                             .clipShape(Circle())
                     }
                 }
@@ -77,8 +78,8 @@ struct SoundCardView: View {
             Spacer()
         }
         .padding()
-        .background(Color.white)
+        .background(isDarkStyle ? Color.white : Color.white)
         .cornerRadius(20)
-        .shadow(color: Color.black.opacity(0.05), radius: 4, x: 0, y: 4)
+        .shadow(color: isDarkStyle ? Color.black.opacity(0.05) : Color.black.opacity(0.06), radius: 4, x: 0, y: 4)
     }
 }

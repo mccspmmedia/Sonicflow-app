@@ -15,6 +15,10 @@ class SoundPlayerViewModel: ObservableObject {
     private var player: AVAudioPlayer?
     private var timer: Timer?
 
+    enum SoundCardStyle {
+        case light, dark
+    }
+
     // MARK: - Sound Categories
     let natureSoundList: [Sound] = [
         Sound(name: "Ocean", fileName: "sea", imageName: "sea"),
@@ -64,7 +68,6 @@ class SoundPlayerViewModel: ObservableObject {
         loadFavoriteSounds()
     }
 
-    // MARK: - Audio Setup
     private func setupAudioSession() {
         do {
             try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
@@ -74,7 +77,6 @@ class SoundPlayerViewModel: ObservableObject {
         }
     }
 
-    // MARK: - Playback
     func play(_ sound: Sound) {
         if currentSound?.id != sound.id {
             stopAllSounds()
@@ -116,16 +118,13 @@ class SoundPlayerViewModel: ObservableObject {
         }
     }
 
-    // MARK: - Volume Control (for Timer)
     func setVolume(for sound: Sound, to volume: Float) {
         if currentSound?.id == sound.id {
             player?.volume = volume
         }
     }
 
-    // MARK: - Timer Countdown
     func startCountdown(minutes: Int) {
-        // Защита от ситуации, когда currentSound ещё не установлен
         guard currentSound != nil else {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 self.startCountdown(minutes: minutes)
@@ -165,7 +164,6 @@ class SoundPlayerViewModel: ObservableObject {
         timeRemaining = 0
     }
 
-    // MARK: - Favorites
     func toggleFavorite(_ sound: Sound) {
         if favoriteSounds.contains(sound) {
             favoriteSounds.removeAll { $0.id == sound.id }
@@ -175,7 +173,6 @@ class SoundPlayerViewModel: ObservableObject {
         saveFavoriteSounds()
     }
 
-    // MARK: - Recently Played
     func addToRecentlyPlayed(sound: Sound) {
         if let index = recentlyPlayed.firstIndex(of: sound) {
             recentlyPlayed.remove(at: index)
@@ -187,7 +184,6 @@ class SoundPlayerViewModel: ObservableObject {
         saveRecentlyPlayed()
     }
 
-    // MARK: - Persistence
     private func saveRecentlyPlayed() {
         if let data = try? JSONEncoder().encode(recentlyPlayed) {
             UserDefaults.standard.set(data, forKey: "recentlyPlayed")
@@ -214,7 +210,6 @@ class SoundPlayerViewModel: ObservableObject {
         }
     }
 
-    // MARK: - Helpers
     private func markSoundAsPlaying(_ sound: Sound) {
         allSounds.indices.forEach { index in
             allSounds[index].isPlaying = allSounds[index].id == sound.id

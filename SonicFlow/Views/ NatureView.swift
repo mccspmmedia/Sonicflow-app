@@ -6,7 +6,7 @@ struct NatureView: View {
 
     var body: some View {
         ZStack {
-            // 🔧 Чуть более тёмный светло-серый фон
+            // 🔧 Светло-серый фон
             Color(red: 235/255, green: 235/255, blue: 235/255)
                 .ignoresSafeArea()
 
@@ -20,9 +20,13 @@ struct NatureView: View {
 
                     VStack(spacing: 16) {
                         ForEach(soundVM.natureSoundList) { sound in
-                            SoundCardView(sound: sound, onTimerTap: {
-                                selectedSoundForTimer = sound
-                            })
+                            SoundCardView(
+                                sound: sound,
+                                onTimerTap: {
+                                    selectedSoundForTimer = sound
+                                },
+                                isDarkStyle: false // ✅ светлый фон = тёмные иконки
+                            )
                             .padding(.horizontal)
                         }
                     }

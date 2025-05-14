@@ -3,6 +3,7 @@ import SwiftUI
 struct CompactSoundCardView: View {
     let sound: Sound
     var onTimerTap: () -> Void
+    var isDarkStyle: Bool = true
 
     @EnvironmentObject var soundVM: SoundPlayerViewModel
 
@@ -16,54 +17,26 @@ struct CompactSoundCardView: View {
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(sound.name)
-                    .foregroundColor(.white)
-                    .font(.headline)
+                    .foregroundColor(isDarkStyle ? .white : .black)
+                    .font(.subheadline.bold())
 
                 HStack(spacing: 10) {
-                    Button(action: { soundVM.play(sound) }) {
-                        Image(systemName: "play.fill")
-                            .foregroundColor(.white)
-                            .padding(6)
-                            .background(Color.yellow)
-                            .clipShape(Circle())
+                    iconButton("play.fill", color: .yellow) {
+                        soundVM.play(sound)
                     }
-
-                    Button(action: { soundVM.pauseCurrentSound() }) {
-                        Image(systemName: "pause.fill")
-                            .foregroundColor(.white)
-                            .padding(6)
-                            .background(Color.blue)
-                            .clipShape(Circle())
+                    iconButton("pause.fill", color: .blue) {
+                        soundVM.pauseCurrentSound()
                     }
-
-                    Button(action: { soundVM.stopAllSounds() }) {
-                        Image(systemName: "stop.fill")
-                            .foregroundColor(.white)
-                            .padding(6)
-                            .background(Color.red)
-                            .clipShape(Circle())
+                    iconButton("stop.fill", color: .red) {
+                        soundVM.stopAllSounds()
                     }
-
-                    Button(action: {
+                    iconButton(soundVM.favoriteSounds.contains(sound) ? "heart.fill" : "heart", color: .pink) {
                         withAnimation {
                             soundVM.toggleFavorite(sound)
                         }
-                    }) {
-                        Image(systemName: soundVM.favoriteSounds.contains(sound) ? "heart.fill" : "heart")
-                            .foregroundColor(.white)
-                            .padding(6)
-                            .background(Color.pink)
-                            .clipShape(Circle())
                     }
-
-                    Button(action: {
+                    iconButton("timer", color: .orange) {
                         onTimerTap()
-                    }) {
-                        Image(systemName: "timer")
-                            .foregroundColor(.white)
-                            .padding(6)
-                            .background(Color.orange)
-                            .clipShape(Circle())
                     }
                 }
             }
@@ -71,7 +44,21 @@ struct CompactSoundCardView: View {
             Spacer()
         }
         .padding()
-        .background(Color(red: 12/255, green: 14/255, blue: 38/255))
-        .cornerRadius(20)
+        .background(isDarkStyle
+                    ? Color(red: 12/255, green: 14/255, blue: 38/255)
+                    : Color.white)
+        .cornerRadius(16)
+        .shadow(color: isDarkStyle ? .clear : Color.black.opacity(0.05), radius: 4, x: 0, y: 4)
+    }
+
+    @ViewBuilder
+    private func iconButton(_ systemName: String, color: Color, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Image(systemName: systemName)
+                .foregroundColor(isDarkStyle ? .white : .black)
+                .padding(6)
+                .background(color.opacity(isDarkStyle ? 0.7 : 0.15))
+                .clipShape(Circle())
+        }
     }
 }
