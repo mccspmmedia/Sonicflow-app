@@ -6,7 +6,7 @@ struct NatureView: View {
 
     var body: some View {
         ZStack {
-            // 🔧 Светло-серый фон
+            // ✅ Светло-серый фон
             Color(red: 235/255, green: 235/255, blue: 235/255)
                 .ignoresSafeArea()
 
@@ -25,7 +25,7 @@ struct NatureView: View {
                                 onTimerTap: {
                                     selectedSoundForTimer = sound
                                 },
-                                isDarkStyle: false // ✅ светлый фон = тёмные иконки
+                                isDarkStyle: false // Светлый стиль
                             )
                             .padding(.horizontal)
                         }

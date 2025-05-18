@@ -6,14 +6,19 @@ import AuthenticationServices
 struct WelcomeView: View {
     @State private var isLoggedIn = false
 
+    // ✅ Аргумент для UI-тестов
+    var isUITest: Bool {
+        CommandLine.arguments.contains("-isUITest")
+    }
+
     var body: some View {
-        if isLoggedIn {
+        // ✅ Блок обхода авторизации
+        if isLoggedIn || isUITest {
             MainTabView()
         } else {
             VStack(spacing: 32) {
                 Spacer()
 
-                // Заголовок и подзаголовок
                 VStack(spacing: 12) {
                     Text("Welcome to")
                         .font(.title3)
@@ -38,7 +43,6 @@ struct WelcomeView: View {
                         .foregroundColor(.gray)
                 }
 
-                // Кнопки входа
                 VStack(spacing: 16) {
                     SignInWithAppleButton(
                         onRequest: { request in

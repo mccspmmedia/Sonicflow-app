@@ -1,41 +1,63 @@
-//
-//  SonicFlowUITests.swift
-//  SonicFlowUITests
-//
-//  Created by Дмитрий on 03.05.25.
-//
-
 import XCTest
 
 final class SonicFlowUITests: XCTestCase {
 
+    var app: XCUIApplication!
+
     override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-
-        // In UI tests it is usually best to stop immediately when a failure occurs.
         continueAfterFailure = false
-
-        // In UI tests it’s important to set the initial state - such as interface orientation - required for your tests before they run. The setUp method is a good place to do this.
-    }
-
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
-
-    @MainActor
-    func testExample() throws {
-        // UI tests must launch the application that they test.
-        let app = XCUIApplication()
+        app = XCUIApplication()
+        app.launchArguments.append("-isUITest") // ✅ Аргумент для обхода логина
         app.launch()
-
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
     }
 
-    @MainActor
-    func testLaunchPerformance() throws {
-        // This measures how long it takes to launch your application.
-        measure(metrics: [XCTApplicationLaunchMetric()]) {
-            XCUIApplication().launch()
-        }
+    func testTabBarNavigation() throws {
+        XCTAssertTrue(app.tabBars.buttons["Home"].exists)
+        XCTAssertTrue(app.tabBars.buttons["Nature"].exists)
+        XCTAssertTrue(app.tabBars.buttons["Sleep"].exists)
+        XCTAssertTrue(app.tabBars.buttons["Meditation"].exists)
+        XCTAssertTrue(app.tabBars.buttons["Ambience"].exists)
+
+        app.tabBars.buttons["Sleep"].tap()
+        XCTAssertTrue(app.staticTexts["Sleep Sounds"].exists)
+
+        app.tabBars.buttons["Meditation"].tap()
+        XCTAssertTrue(app.staticTexts["Meditation Sounds"].exists)
+    }
+
+    func testSoundPlayback() throws {
+        app.tabBars.buttons["Nature"].tap()
+
+        let oceanCell = app.scrollViews.otherElements.containing(.staticText, identifier: "Ocean").element
+        XCTAssertTrue(oceanCell.exists)
+
+        let playButton = oceanCell.buttons["play.fill"]
+        XCTAssertTrue(playButton.exists)
+        playButton.tap()
+
+        let pauseButton = oceanCell.buttons["pause.fill"]
+        XCTAssertTrue(pauseButton.waitForExistence(timeout: 2))
+    }
+
+    func testOpenTimerPopup() throws {
+        app.tabBars.buttons["Ambience"].tap()
+
+        let timerButton = app.scrollViews.buttons["timer"]
+        XCTAssertTrue(timerButton.exists)
+        timerButton.tap()
+
+        let popupText = app.staticTexts["Set Timer"]
+        XCTAssertTrue(popupText.waitForExistence(timeout: 2))
+    }
+
+    func testToggleFavorite() throws {
+        app.tabBars.buttons["Sleep"].tap()
+
+        let heartButton = app.scrollViews.buttons["heart"]
+        XCTAssertTrue(heartButton.exists)
+        heartButton.tap()
+
+        let filledHeartButton = app.scrollViews.buttons["heart.fill"]
+        XCTAssertTrue(filledHeartButton.waitForExistence(timeout: 2))
     }
 }

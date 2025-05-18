@@ -6,7 +6,7 @@ struct AmbienceView: View {
 
     var body: some View {
         ZStack {
-            // Светло-серый фон
+            // ✅ Светло-серый фон
             Color(red: 235/255, green: 235/255, blue: 235/255)
                 .ignoresSafeArea()
 
@@ -20,9 +20,13 @@ struct AmbienceView: View {
 
                     VStack(spacing: 16) {
                         ForEach(soundVM.ambienceSoundList) { sound in
-                            SoundCardView(sound: sound, onTimerTap: {
-                                selectedSoundForTimer = sound
-                            }, isDarkStyle: false) // Светлый стиль
+                            SoundCardView(
+                                sound: sound,
+                                onTimerTap: {
+                                    selectedSoundForTimer = sound
+                                },
+                                isDarkStyle: false
+                            )
                             .padding(.horizontal)
                         }
                     }

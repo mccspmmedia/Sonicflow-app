@@ -37,24 +37,41 @@ class SoundPlayerViewModel: ObservableObject {
     ]
 
     let sleepSoundList: [Sound] = [
-        Sound(name: "White Noise", fileName: "white_noise", imageName: "white_noise"),
-        Sound(name: "Crickets at Night", fileName: "crickets", imageName: "crickets"),
-        Sound(name: "Rain on Window", fileName: "rain_window", imageName: "rain_window"),
-        Sound(name: "Breathing Sound", fileName: "breathing", imageName: "breathing")
-    ]
+            Sound(name: "White Noise", fileName: "white_noise", imageName: "white_noise"),
+            Sound(name: "Crickets at Night", fileName: "crickets", imageName: "crickets"),
+            Sound(name: "Rain on Window", fileName: "rain_window", imageName: "rain_window"),
+            Sound(name: "Breathing Sound", fileName: "breathing", imageName: "breathing"),
+            Sound(name: "Wind in Trees", fileName: "wind_in_trees", imageName: "wind_in_trees"),
+            Sound(name: "Fireplace", fileName: "fireplace", imageName: "fireplace"),
+            Sound(name: "Highway", fileName: "highway", imageName: "highway"),
+            Sound(name: "Heartbeat", fileName: "heartbeat", imageName: "heartbeat"),
+            Sound(name: "Brown Noise", fileName: "broun_noise", imageName: "broun_noise"),
+        ]
 
-    let ambienceSoundList: [Sound] = [
-        Sound(name: "Cafe", fileName: "cafe", imageName: "cafe"),
-        Sound(name: "Library", fileName: "library", imageName: "library"),
-        Sound(name: "City Night", fileName: "city", imageName: "city"),
-        Sound(name: "Train", fileName: "train", imageName: "train")
-    ]
+        let ambienceSoundList: [Sound] = [
+            Sound(name: "Cafe", fileName: "cafe", imageName: "cafe"),
+            Sound(name: "Library", fileName: "library", imageName: "library"),
+            Sound(name: "City Night", fileName: "city", imageName: "city"),
+            Sound(name: "Train", fileName: "train", imageName: "train"),
+            Sound(name: "Office", fileName: "office", imageName: "office"),
+            Sound(name: "Foodcourt", fileName: "foodcourt", imageName: "foodcourt"),
+            Sound(name: "Fan", fileName: "fan", imageName: "fan"),
+            Sound(name: "Aircraft", fileName: "aircraft", imageName: "aircraft"),
+            Sound(name: "Train Carriage", fileName: "shum_vnutri_vagona", imageName: "shum_vnutri_vagona"),
+            Sound(name: "Circus", fileName: "circus", imageName: "circus")
+        ]
 
     let meditationSoundList: [Sound] = [
         Sound(name: "Deep Focus", fileName: "deep_focus", imageName: "deep_focus"),
         Sound(name: "Calm Mind", fileName: "calm_mind", imageName: "calm_mind"),
         Sound(name: "Inner Place", fileName: "inner_place", imageName: "inner_place"),
-        Sound(name: "Healing Waves", fileName: "healing_waves", imageName: "healing_waves")
+        Sound(name: "Healing Waves", fileName: "healing_waves", imageName: "healing_waves"),
+        Sound(name: "Morning Clarity", fileName: "morning_clarity", imageName: "morning_clarity"),
+        Sound(name: "Self Love", fileName: "self_love", imageName: "self_love"),
+        Sound(name: "Spa Relaxation", fileName: "spa_relaxation", imageName: "spa_relaxation"),
+        Sound(name: "Nature Sound", fileName: "nature_sound", imageName: "nature_sound"),
+        Sound(name: "Evening Unwind", fileName: "evening", imageName: "evening"),
+        Sound(name: "Mantra", fileName: "mantra", imageName: "mantra")
     ]
 
     private var allAvailableSounds: [Sound] {

@@ -30,6 +30,7 @@ struct SoundCardView: View {
                             .background(isDarkStyle ? Color.blue.opacity(0.7) : Color.blue)
                             .clipShape(Circle())
                     }
+                    .accessibilityIdentifier("playButton")
 
                     Button(action: {
                         soundVM.pauseCurrentSound()
@@ -40,6 +41,7 @@ struct SoundCardView: View {
                             .background(isDarkStyle ? Color.red.opacity(0.7) : Color.red)
                             .clipShape(Circle())
                     }
+                    .accessibilityIdentifier("pauseButton")
 
                     Button(action: {
                         soundVM.stopAllSounds()
@@ -50,6 +52,7 @@ struct SoundCardView: View {
                             .background(isDarkStyle ? Color.yellow.opacity(0.7) : Color.yellow)
                             .clipShape(Circle())
                     }
+                    .accessibilityIdentifier("stopButton")
 
                     Button(action: {
                         withAnimation {
@@ -62,6 +65,7 @@ struct SoundCardView: View {
                             .background(isDarkStyle ? Color.pink.opacity(0.7) : Color.pink)
                             .clipShape(Circle())
                     }
+                    .accessibilityIdentifier("heartButton")
 
                     Button(action: {
                         onTimerTap()
@@ -72,6 +76,7 @@ struct SoundCardView: View {
                             .background(isDarkStyle ? Color.orange.opacity(0.7) : Color.orange)
                             .clipShape(Circle())
                     }
+                    .accessibilityIdentifier("timerButton")
                 }
             }
 

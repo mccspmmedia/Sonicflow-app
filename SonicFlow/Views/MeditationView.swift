@@ -6,7 +6,7 @@ struct MeditationView: View {
 
     var body: some View {
         ZStack {
-            // Светло-серый фон
+            // ✅ Светло-серый фон
             Color(red: 235/255, green: 235/255, blue: 235/255)
                 .ignoresSafeArea()
 
@@ -20,9 +20,13 @@ struct MeditationView: View {
 
                     VStack(spacing: 16) {
                         ForEach(soundVM.meditationSoundList) { sound in
-                            SoundCardView(sound: sound, onTimerTap: {
-                                selectedSoundForTimer = sound
-                            }, isDarkStyle: false)
+                            SoundCardView(
+                                sound: sound,
+                                onTimerTap: {
+                                    selectedSoundForTimer = sound
+                                },
+                                isDarkStyle: false
+                            )
                             .padding(.horizontal)
                         }
                     }

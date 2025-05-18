@@ -6,7 +6,7 @@ struct SleepView: View {
 
     var body: some View {
         ZStack {
-            // Светло-серый фон
+            // ✅ Светло-серый фон
             Color(red: 235/255, green: 235/255, blue: 235/255)
                 .ignoresSafeArea()
 
@@ -25,7 +25,7 @@ struct SleepView: View {
                                 onTimerTap: {
                                     selectedSoundForTimer = sound
                                 },
-                                isDarkStyle: false // Тёмные иконки под светлый фон
+                                isDarkStyle: false
                             )
                             .padding(.horizontal)
                         }
