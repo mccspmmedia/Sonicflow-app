@@ -91,11 +91,19 @@ class SoundPlayerViewModel: ObservableObject {
         loadRecentlyPlayed()
         loadFavoriteSounds()
         observePremiumUnlock()
+        observeSettingsReset()
     }
 
     private func observePremiumUnlock() {
         NotificationCenter.default.addObserver(forName: .premiumUnlocked, object: nil, queue: .main) { [weak self] _ in
             self?.isPremiumUnlocked = true
+        }
+    }
+
+    private func observeSettingsReset() {
+        NotificationCenter.default.addObserver(forName: .settingsDismissed, object: nil, queue: .main) { [weak self] _ in
+            self?.isPremiumUnlocked = UserDefaults.standard.bool(forKey: "isPremiumUnlocked")
+            print("🔄 Refetched isPremiumUnlocked: \(self?.isPremiumUnlocked ?? false)")
         }
     }
 
@@ -254,4 +262,7 @@ class SoundPlayerViewModel: ObservableObject {
     }
 }
 
+extension Notification.Name {
+    static let settingsDismissed = Notification.Name("settingsDismissed")
+}
 

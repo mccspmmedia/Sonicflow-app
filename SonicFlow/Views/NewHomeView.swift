@@ -7,6 +7,7 @@ struct NewHomeView: View {
     @State private var isReminderSet: Bool = false
     @State private var showTimerPopup = false
     @State private var selectedSoundForTimer: Sound? = nil
+    @State private var showSettings = false
 
     var body: some View {
         ZStack {
@@ -15,9 +16,20 @@ struct NewHomeView: View {
 
             ScrollView {
                 VStack(spacing: 24) {
-
                     // MARK: - Logo Header
                     VStack(spacing: 6) {
+                        HStack {
+                            Spacer()
+                            Button(action: {
+                                showSettings = true
+                            }) {
+                                Image(systemName: "gearshape.fill")
+                                    .foregroundColor(.white)
+                                    .imageScale(.large)
+                                    .padding()
+                            }
+                        }
+
                         Text("SONIC FLOW")
                             .font(.custom("Didot", size: 36))
                             .foregroundColor(.white)
@@ -113,6 +125,9 @@ struct NewHomeView: View {
                 TimerPopupView()
                     .environmentObject(soundVM)
             }
+        }
+        .sheet(isPresented: $showSettings) {
+            SettingsView()
         }
     }
 }
