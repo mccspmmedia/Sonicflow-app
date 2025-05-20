@@ -3,88 +3,95 @@ import SwiftUI
 struct SoundCardView: View {
     let sound: Sound
     var onTimerTap: () -> Void
-    var isDarkStyle: Bool = true // 🔹 Новый параметр
+    var isDarkStyle: Bool = true
 
     @EnvironmentObject var soundVM: SoundPlayerViewModel
+    @State private var showSubscription = false
 
     var body: some View {
         HStack(spacing: 16) {
-            Image(sound.imageName)
-                .resizable()
-                .scaledToFill()
-                .frame(width: 60, height: 60)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
+            ZStack(alignment: .topTrailing) {
+                Image(sound.imageName)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 60, height: 60)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+
+                if sound.isPremium && !soundVM.isPremiumUnlocked {
+                    Image(systemName: "lock.fill")
+                        .foregroundColor(.white)
+                        .padding(6)
+                        .background(Color.black.opacity(0.6))
+                        .clipShape(Circle())
+                        .offset(x: -5, y: 5)
+                        .transition(.scale)
+                }
+            }
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(sound.name)
-                    .foregroundColor(isDarkStyle ? .white : .black)
                     .font(.headline)
+                    .foregroundColor(isDarkStyle ? .white : .black)
 
                 HStack(spacing: 12) {
-                    Button(action: {
-                        soundVM.play(sound)
-                    }) {
-                        Image(systemName: "play.fill")
-                            .foregroundColor(.white)
-                            .padding(8)
-                            .background(isDarkStyle ? Color.blue.opacity(0.7) : Color.blue)
-                            .clipShape(Circle())
-                    }
-                    .accessibilityIdentifier("playButton")
-
-                    Button(action: {
-                        soundVM.pauseCurrentSound()
-                    }) {
-                        Image(systemName: "pause.fill")
-                            .foregroundColor(.white)
-                            .padding(8)
-                            .background(isDarkStyle ? Color.red.opacity(0.7) : Color.red)
-                            .clipShape(Circle())
-                    }
-                    .accessibilityIdentifier("pauseButton")
-
-                    Button(action: {
-                        soundVM.stopAllSounds()
-                    }) {
-                        Image(systemName: "stop.fill")
-                            .foregroundColor(.white)
-                            .padding(8)
-                            .background(isDarkStyle ? Color.yellow.opacity(0.7) : Color.yellow)
-                            .clipShape(Circle())
-                    }
-                    .accessibilityIdentifier("stopButton")
-
-                    Button(action: {
-                        withAnimation {
-                            soundVM.toggleFavorite(sound)
+                    controlButton(icon: "play.fill", color: .blue) {
+                        handlePremiumAccess {
+                            soundVM.play(sound)
                         }
-                    }) {
-                        Image(systemName: soundVM.favoriteSounds.contains(sound) ? "heart.fill" : "heart")
-                            .foregroundColor(.white)
-                            .padding(8)
-                            .background(isDarkStyle ? Color.pink.opacity(0.7) : Color.pink)
-                            .clipShape(Circle())
                     }
-                    .accessibilityIdentifier("heartButton")
 
-                    Button(action: {
-                        onTimerTap()
-                    }) {
-                        Image(systemName: "timer")
-                            .foregroundColor(.white)
-                            .padding(8)
-                            .background(isDarkStyle ? Color.orange.opacity(0.7) : Color.orange)
-                            .clipShape(Circle())
+                    controlButton(icon: "pause.fill", color: .red) {
+                        soundVM.pauseCurrentSound()
                     }
-                    .accessibilityIdentifier("timerButton")
+
+                    controlButton(icon: "stop.fill", color: .yellow) {
+                        soundVM.stopAllSounds()
+                    }
+
+                    controlButton(icon: soundVM.favoriteSounds.contains(sound) ? "heart.fill" : "heart", color: .pink) {
+                        handlePremiumAccess {
+                            withAnimation {
+                                soundVM.toggleFavorite(sound)
+                            }
+                        }
+                    }
+
+                    controlButton(icon: "timer", color: .orange) {
+                        handlePremiumAccess {
+                            onTimerTap()
+                        }
+                    }
                 }
             }
 
             Spacer()
         }
         .padding()
-        .background(isDarkStyle ? Color.white : Color.white)
+        .background(Color.white)
         .cornerRadius(20)
-        .shadow(color: isDarkStyle ? Color.black.opacity(0.05) : Color.black.opacity(0.06), radius: 4, x: 0, y: 4)
+        .shadow(color: Color.black.opacity(0.05), radius: 4, x: 0, y: 4)
+        .sheet(isPresented: $showSubscription) {
+            SubscriptionView()
+                .environmentObject(soundVM)
+        }
+    }
+
+    // MARK: - Helper
+    private func controlButton(icon: String, color: Color, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Image(systemName: icon)
+                .foregroundColor(.white)
+                .padding(8)
+                .background(isDarkStyle ? color.opacity(0.7) : color)
+                .clipShape(Circle())
+        }
+    }
+
+    private func handlePremiumAccess(_ action: () -> Void) {
+        if sound.isPremium && !soundVM.isPremiumUnlocked {
+            showSubscription = true
+        } else {
+            action()
+        }
     }
 }

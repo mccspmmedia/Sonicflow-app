@@ -25,7 +25,7 @@ struct NatureView: View {
                                 onTimerTap: {
                                     selectedSoundForTimer = sound
                                 },
-                                isDarkStyle: false // Светлый стиль
+                                isDarkStyle: false
                             )
                             .padding(.horizontal)
                         }

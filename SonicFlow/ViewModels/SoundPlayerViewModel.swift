@@ -12,6 +12,12 @@ class SoundPlayerViewModel: ObservableObject {
     @Published var isTimerRunning: Bool = false
     @Published var timeRemaining: Int = 0
 
+    @Published var isPremiumUnlocked: Bool {
+        didSet {
+            UserDefaults.standard.set(isPremiumUnlocked, forKey: "isPremiumUnlocked")
+        }
+    }
+
     private var player: AVAudioPlayer?
     private var timer: Timer?
 
@@ -23,55 +29,55 @@ class SoundPlayerViewModel: ObservableObject {
     let natureSoundList: [Sound] = [
         Sound(name: "Ocean", fileName: "sea", imageName: "sea"),
         Sound(name: "Forest", fileName: "forest", imageName: "forest"),
-        Sound(name: "Campfire", fileName: "fire", imageName: "fire"),
-        Sound(name: "Rain", fileName: "rain", imageName: "rain"),
-        Sound(name: "Rain with Thunder", fileName: "rain_thunder", imageName: "rain_thunder"),
-        Sound(name: "Rain in Forest", fileName: "rain_forest", imageName: "rain_forest"),
-        Sound(name: "Rain in Tent", fileName: "rain_tent", imageName: "rain_tent"),
-        Sound(name: "Storm", fileName: "storm", imageName: "storm"),
-        Sound(name: "Waterfall", fileName: "waterfall", imageName: "waterfall"),
-        Sound(name: "Wind", fileName: "wind", imageName: "wind"),
-        Sound(name: "Snow Footsteps", fileName: "snow_steps", imageName: "snow_steps"),
-        Sound(name: "Stream", fileName: "stream", imageName: "stream"),
-        Sound(name: "Jungle", fileName: "jungle", imageName: "jungle")
+        Sound(name: "Campfire", fileName: "fire", imageName: "fire", isPremium: true),
+        Sound(name: "Rain", fileName: "rain", imageName: "rain", isPremium: true),
+        Sound(name: "Rain with Thunder", fileName: "rain_thunder", imageName: "rain_thunder", isPremium: true),
+        Sound(name: "Rain in Forest", fileName: "rain_forest", imageName: "rain_forest", isPremium: true),
+        Sound(name: "Rain in Tent", fileName: "rain_tent", imageName: "rain_tent", isPremium: true),
+        Sound(name: "Storm", fileName: "storm", imageName: "storm", isPremium: true),
+        Sound(name: "Waterfall", fileName: "waterfall", imageName: "waterfall", isPremium: true),
+        Sound(name: "Wind", fileName: "wind", imageName: "wind", isPremium: true),
+        Sound(name: "Snow Footsteps", fileName: "snow_steps", imageName: "snow_steps", isPremium: true),
+        Sound(name: "Stream", fileName: "stream", imageName: "stream", isPremium: true),
+        Sound(name: "Jungle", fileName: "jungle", imageName: "jungle", isPremium: true)
     ]
 
     let sleepSoundList: [Sound] = [
-            Sound(name: "White Noise", fileName: "white_noise", imageName: "white_noise"),
-            Sound(name: "Crickets at Night", fileName: "crickets", imageName: "crickets"),
-            Sound(name: "Rain on Window", fileName: "rain_window", imageName: "rain_window"),
-            Sound(name: "Breathing Sound", fileName: "breathing", imageName: "breathing"),
-            Sound(name: "Wind in Trees", fileName: "wind_in_trees", imageName: "wind_in_trees"),
-            Sound(name: "Fireplace", fileName: "fireplace", imageName: "fireplace"),
-            Sound(name: "Highway", fileName: "highway", imageName: "highway"),
-            Sound(name: "Heartbeat", fileName: "heartbeat", imageName: "heartbeat"),
-            Sound(name: "Brown Noise", fileName: "broun_noise", imageName: "broun_noise"),
-        ]
+        Sound(name: "White Noise", fileName: "white_noise", imageName: "white_noise"),
+        Sound(name: "Crickets at Night", fileName: "crickets", imageName: "crickets"),
+        Sound(name: "Rain on Window", fileName: "rain_window", imageName: "rain_window", isPremium: true),
+        Sound(name: "Breathing Sound", fileName: "breathing", imageName: "breathing", isPremium: true),
+        Sound(name: "Wind in Trees", fileName: "wind_in_trees", imageName: "wind_in_trees", isPremium: true),
+        Sound(name: "Fireplace", fileName: "fireplace", imageName: "fireplace", isPremium: true),
+        Sound(name: "Highway", fileName: "highway", imageName: "highway", isPremium: true),
+        Sound(name: "Heartbeat", fileName: "heartbeat", imageName: "heartbeat", isPremium: true),
+        Sound(name: "Brown Noise", fileName: "broun_noise", imageName: "broun_noise", isPremium: true)
+    ]
 
-        let ambienceSoundList: [Sound] = [
-            Sound(name: "Cafe", fileName: "cafe", imageName: "cafe"),
-            Sound(name: "Library", fileName: "library", imageName: "library"),
-            Sound(name: "City Night", fileName: "city", imageName: "city"),
-            Sound(name: "Train", fileName: "train", imageName: "train"),
-            Sound(name: "Office", fileName: "office", imageName: "office"),
-            Sound(name: "Foodcourt", fileName: "foodcourt", imageName: "foodcourt"),
-            Sound(name: "Fan", fileName: "fan", imageName: "fan"),
-            Sound(name: "Aircraft", fileName: "aircraft", imageName: "aircraft"),
-            Sound(name: "Train Carriage", fileName: "shum_vnutri_vagona", imageName: "shum_vnutri_vagona"),
-            Sound(name: "Circus", fileName: "circus", imageName: "circus")
-        ]
+    let ambienceSoundList: [Sound] = [
+        Sound(name: "Cafe", fileName: "cafe", imageName: "cafe"),
+        Sound(name: "Library", fileName: "library", imageName: "library"),
+        Sound(name: "City Night", fileName: "city", imageName: "city", isPremium: true),
+        Sound(name: "Train", fileName: "train", imageName: "train", isPremium: true),
+        Sound(name: "Office", fileName: "office", imageName: "office", isPremium: true),
+        Sound(name: "Foodcourt", fileName: "foodcourt", imageName: "foodcourt", isPremium: true),
+        Sound(name: "Fan", fileName: "fan", imageName: "fan", isPremium: true),
+        Sound(name: "Aircraft", fileName: "aircraft", imageName: "aircraft", isPremium: true),
+        Sound(name: "Train Carriage", fileName: "shum_vnutri_vagona", imageName: "shum_vnutri_vagona", isPremium: true),
+        Sound(name: "Circus", fileName: "circus", imageName: "circus", isPremium: true)
+    ]
 
     let meditationSoundList: [Sound] = [
         Sound(name: "Deep Focus", fileName: "deep_focus", imageName: "deep_focus"),
         Sound(name: "Calm Mind", fileName: "calm_mind", imageName: "calm_mind"),
-        Sound(name: "Inner Place", fileName: "inner_place", imageName: "inner_place"),
-        Sound(name: "Healing Waves", fileName: "healing_waves", imageName: "healing_waves"),
-        Sound(name: "Morning Clarity", fileName: "morning_clarity", imageName: "morning_clarity"),
-        Sound(name: "Self Love", fileName: "self_love", imageName: "self_love"),
-        Sound(name: "Spa Relaxation", fileName: "spa_relaxation", imageName: "spa_relaxation"),
-        Sound(name: "Nature Sound", fileName: "nature_sound", imageName: "nature_sound"),
-        Sound(name: "Evening Unwind", fileName: "evening", imageName: "evening"),
-        Sound(name: "Mantra", fileName: "mantra", imageName: "mantra")
+        Sound(name: "Inner Place", fileName: "inner_place", imageName: "inner_place", isPremium: true),
+        Sound(name: "Healing Waves", fileName: "healing_waves", imageName: "healing_waves", isPremium: true),
+        Sound(name: "Morning Clarity", fileName: "morning_clarity", imageName: "morning_clarity", isPremium: true),
+        Sound(name: "Self Love", fileName: "self_love", imageName: "self_love", isPremium: true),
+        Sound(name: "Spa Relaxation", fileName: "spa_relaxation", imageName: "spa_relaxation", isPremium: true),
+        Sound(name: "Nature Sound", fileName: "nature_sound", imageName: "nature_sound", isPremium: true),
+        Sound(name: "Evening Unwind", fileName: "evening", imageName: "evening", isPremium: true),
+        Sound(name: "Mantra", fileName: "mantra", imageName: "mantra", isPremium: true)
     ]
 
     private var allAvailableSounds: [Sound] {
@@ -79,10 +85,18 @@ class SoundPlayerViewModel: ObservableObject {
     }
 
     init() {
+        self.isPremiumUnlocked = UserDefaults.standard.bool(forKey: "isPremiumUnlocked")
         setupAudioSession()
         allSounds = allAvailableSounds
         loadRecentlyPlayed()
         loadFavoriteSounds()
+        observePremiumUnlock()
+    }
+
+    private func observePremiumUnlock() {
+        NotificationCenter.default.addObserver(forName: .premiumUnlocked, object: nil, queue: .main) { [weak self] _ in
+            self?.isPremiumUnlocked = true
+        }
     }
 
     private func setupAudioSession() {
@@ -239,3 +253,5 @@ class SoundPlayerViewModel: ObservableObject {
         }
     }
 }
+
+
