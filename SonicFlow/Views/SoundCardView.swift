@@ -67,8 +67,14 @@ struct SoundCardView: View {
             Spacer()
         }
         .padding()
-        .background(Color.white)
-        .cornerRadius(20)
+        .background(
+            RoundedRectangle(cornerRadius: 20)
+                .fill(soundVM.currentSound?.id == sound.id ? Color.blue.opacity(0.15) : Color.white)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 20)
+                .stroke(soundVM.currentSound?.id == sound.id ? Color.blue : Color.clear, lineWidth: 2)
+        )
         .shadow(color: Color.black.opacity(0.05), radius: 4, x: 0, y: 4)
         .sheet(isPresented: $showSubscription) {
             SubscriptionView()

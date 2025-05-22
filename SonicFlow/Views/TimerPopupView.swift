@@ -39,6 +39,7 @@ struct TimerPopupView: View {
                 .frame(height: 100)
 
                 Button(action: {
+                    print("🔁 Start timer tapped. Current sound: \(soundVM.currentSound?.name ?? "nil")")
                     soundVM.startCountdown(minutes: selectedMinutes)
                     dismiss()
                 }) {
@@ -47,9 +48,10 @@ struct TimerPopupView: View {
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(Color.blue.opacity(0.9))
+                        .background(soundVM.currentSound != nil ? Color.blue.opacity(0.9) : Color.gray)
                         .cornerRadius(12)
                 }
+                .disabled(soundVM.currentSound == nil)
             }
 
             Button("Cancel") {

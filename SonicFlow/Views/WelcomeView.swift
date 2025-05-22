@@ -5,6 +5,7 @@ import AuthenticationServices
 
 struct WelcomeView: View {
     @State private var isLoggedIn = false
+    @State private var tapCount = 0
 
     // ✅ Аргумент для UI-тестов
     var isUITest: Bool {
@@ -12,7 +13,6 @@ struct WelcomeView: View {
     }
 
     var body: some View {
-        // ✅ Блок обхода авторизации
         if isLoggedIn || isUITest {
             MainTabView()
         } else {
@@ -27,6 +27,9 @@ struct WelcomeView: View {
                     Text("SONIC FLOW")
                         .font(.largeTitle.bold())
                         .foregroundColor(.white)
+                        .onTapGesture {
+                            handleSecretTap()
+                        }
 
                     Text("~  NATURE  •  SLEEP  •  MEDITATION  ~")
                         .font(.subheadline)
@@ -57,7 +60,7 @@ struct WelcomeView: View {
                                     }
                                 }
                             case .failure(let error):
-                                print("Apple Sign-In failed: \(error.localizedDescription)")
+                                print("❌ Apple Sign-In failed: \(error.localizedDescription)")
                             }
                         }
                     )
@@ -84,8 +87,21 @@ struct WelcomeView: View {
                     colors: [Color.black, Color.blue.opacity(0.3)],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
-                ).ignoresSafeArea()
+                )
+                .ignoresSafeArea()
             )
+        }
+    }
+
+    // MARK: - Секретный вход
+    private func handleSecretTap() {
+        tapCount += 1
+        if tapCount >= 5 {
+            isLoggedIn = true
+        }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
+            tapCount = 0
         }
     }
 
@@ -103,7 +119,7 @@ struct WelcomeView: View {
         GIDSignIn.sharedInstance.configuration = config
         GIDSignIn.sharedInstance.signIn(withPresenting: rootVC) { result, error in
             if let error = error {
-                print("Google Sign-In failed: \(error.localizedDescription)")
+                print("❌ Google Sign-In failed: \(error.localizedDescription)")
                 return
             }
 

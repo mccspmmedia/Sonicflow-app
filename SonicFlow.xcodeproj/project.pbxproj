@@ -12,6 +12,7 @@
 		BB1680192DD2425800191AB9 /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = BB1680182DD2425800191AB9 /* GoogleSignInSwift */; };
 		BB9487FA2DDBAD73002FBC81 /* StoreKitConfig.storekit in Resources */ = {isa = PBXBuildFile; fileRef = BB9487F92DDBAD73002FBC81 /* StoreKitConfig.storekit */; };
 		BB9487FC2DDBAE74002FBC81 /* StoreKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB9487FB2DDBAE65002FBC81 /* StoreKitManager.swift */; };
+		BB9488952DDF207A002FBC81 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB9488942DDF207A002FBC81 /* StoreKit.framework */; };
 		BBAD0B5A2DCE6DAF00F4A257 /* ocean_background.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = BBAD0B592DCE6DAF00F4A257 /* ocean_background.mp4 */; };
 /* End PBXBuildFile section */
 
@@ -39,6 +40,7 @@
 		BB76EC202DC649AB00141171 /* SonicFlowUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SonicFlowUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB9487F92DDBAD73002FBC81 /* StoreKitConfig.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = StoreKitConfig.storekit; sourceTree = "<group>"; };
 		BB9487FB2DDBAE65002FBC81 /* StoreKitManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreKitManager.swift; sourceTree = "<group>"; };
+		BB9488942DDF207A002FBC81 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		BBAD0B592DCE6DAF00F4A257 /* ocean_background.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; name = ocean_background.mp4; path = ../../Downloads/ocean_background.mp4; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -78,6 +80,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BB9488952DDF207A002FBC81 /* StoreKit.framework in Frameworks */,
 				BB1680172DD2425800191AB9 /* GoogleSignIn in Frameworks */,
 				BB1680192DD2425800191AB9 /* GoogleSignInSwift in Frameworks */,
 			);
@@ -111,6 +114,7 @@
 				BB76EC232DC649AB00141171 /* SonicFlowUITests */,
 				BB76EC0A2DC649AA00141171 /* Products */,
 				BB1680132DD2418E00191AB9 /* client_657116176614-lm58c8540jfunbuqpqvt7iie3aojlha2.apps.googleusercontent.com.plist */,
+				BB9488932DDF2079002FBC81 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -122,6 +126,14 @@
 				BB76EC202DC649AB00141171 /* SonicFlowUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		BB9488932DDF2079002FBC81 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				BB9488942DDF207A002FBC81 /* StoreKit.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

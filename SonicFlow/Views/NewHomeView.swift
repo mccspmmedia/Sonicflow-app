@@ -75,10 +75,14 @@ struct NewHomeView: View {
                                 .foregroundColor(.white)
                                 .padding(.horizontal, 16)
 
-                            CompactSoundCardView(sound: current, onTimerTap: {
-                                selectedSoundForTimer = current
-                                showTimerPopup = true
-                            })
+                            CompactSoundCardView(
+                                sound: current,
+                                onTimerTap: {
+                                    selectedSoundForTimer = current
+                                    showTimerPopup = true
+                                },
+                                highlightActive: false
+                            )
                             .padding(.horizontal, 16)
                         }
                     }
@@ -92,10 +96,14 @@ struct NewHomeView: View {
                                 .padding(.horizontal, 16)
 
                             CustomCarousel(items: soundVM.recentlyPlayed) { sound in
-                                CompactSoundCardView(sound: sound, onTimerTap: {
-                                    selectedSoundForTimer = sound
-                                    showTimerPopup = true
-                                })
+                                CompactSoundCardView(
+                                    sound: sound,
+                                    onTimerTap: {
+                                        selectedSoundForTimer = sound
+                                        showTimerPopup = true
+                                    },
+                                    highlightActive: false
+                                )
                             }
                         }
                     }
@@ -109,10 +117,14 @@ struct NewHomeView: View {
                                 .padding(.horizontal, 16)
 
                             CustomCarousel(items: soundVM.favoriteSounds) { sound in
-                                CompactSoundCardView(sound: sound, onTimerTap: {
-                                    selectedSoundForTimer = sound
-                                    showTimerPopup = true
-                                })
+                                CompactSoundCardView(
+                                    sound: sound,
+                                    onTimerTap: {
+                                        selectedSoundForTimer = sound
+                                        showTimerPopup = true
+                                    },
+                                    highlightActive: false
+                                )
                             }
                         }
                     }
