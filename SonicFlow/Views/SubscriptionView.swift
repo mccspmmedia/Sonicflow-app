@@ -1,9 +1,10 @@
 import SwiftUI
+import StoreKit
 
 struct SubscriptionView: View {
-    @EnvironmentObject var soundVM: SoundPlayerViewModel
     @Environment(\.dismiss) var dismiss
-    @State private var isPurchasing = false
+    @ObservedObject var storeKit = StoreKitManager.shared
+    @State private var isProcessing = false
 
     var body: some View {
         VStack(spacing: 24) {
@@ -28,25 +29,34 @@ struct SubscriptionView: View {
             .foregroundColor(.white)
             .padding()
 
-            if isPurchasing {
-                ProgressView()
-                    .tint(.white)
+            if isProcessing {
+                ProgressView().tint(.white)
             } else {
-                Button(action: {
-                    Task {
-                        isPurchasing = true
-                        await StoreKitManager.shared.purchasePremium()
-                        isPurchasing = false
+                VStack(spacing: 12) {
+                    // Кнопка подписки
+                    Button(action: {
+                        Task {
+                            isProcessing = true
+                            await storeKit.purchasePremium()
+                            isProcessing = false
+                            if storeKit.isPremiumPurchased {
+                                dismiss()
+                            }
+                        }
+                    }) {
+                        Text("Subscribe for $9.99 / month")
+                            .font(.headline)
+                            .foregroundColor(.black)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.white)
+                            .cornerRadius(12)
+                    }
+
+                    // Кнопка восстановления покупки
+                    RestorePurchaseButton(isProcessing: $isProcessing) {
                         dismiss()
                     }
-                }) {
-                    Text("Subscribe for $9.99 / month")
-                        .font(.headline)
-                        .foregroundColor(.black)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.white)
-                        .cornerRadius(12)
                 }
                 .padding(.horizontal)
             }
@@ -54,8 +64,7 @@ struct SubscriptionView: View {
             Button("Maybe later") {
                 dismiss()
             }
-            .foregroundColor(.white)
-            .underline()
+            .foregroundColor(.white.opacity(0.8))
 
             Spacer()
         }
@@ -70,8 +79,6 @@ struct SubscriptionView: View {
     }
 }
 
-// ✅ SwiftUI Preview
 #Preview {
     SubscriptionView()
-        .environmentObject(SoundPlayerViewModel())
 }

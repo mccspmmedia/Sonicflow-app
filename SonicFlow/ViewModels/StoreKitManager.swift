@@ -1,12 +1,13 @@
 import Foundation
 import StoreKit
 
+@MainActor
 class StoreKitManager: ObservableObject {
     static let shared = StoreKitManager()
 
     @Published var isPremiumPurchased: Bool = false
 
-    private let premiumProductID = "com.sonicflow.app.premium"
+    private let premiumProductID = "sonicflow.premium"
     private var products: [Product] = []
 
     private init() {
@@ -19,8 +20,7 @@ class StoreKitManager: ObservableObject {
     // MARK: - Fetch products from App Store
     func fetchProducts() async {
         do {
-            let storeProducts = try await Product.products(for: [premiumProductID])
-            products = storeProducts
+            products = try await Product.products(for: [premiumProductID])
         } catch {
             print("❌ Failed to fetch products: \(error.localizedDescription)")
         }
@@ -36,24 +36,24 @@ class StoreKitManager: ObservableObject {
         do {
             let result = try await product.purchase()
             switch result {
-            case .success(let verificationResult):
-                switch verificationResult {
-                case .verified:
+            case .success(let verification):
+                if case .verified(let transaction) = verification {
                     await unlockPremium()
-                case .unverified:
-                    print("❌ Purchase result unverified")
+                    try? await AppStore.sync()
+                } else {
+                    print("❌ Purchase not verified")
                 }
             case .userCancelled:
                 print("⚠️ Purchase cancelled by user")
             default:
-                print("⚠️ Purchase not completed")
+                print("⚠️ Purchase failed or pending")
             }
         } catch {
             print("❌ Purchase failed: \(error.localizedDescription)")
         }
     }
 
-    // MARK: - Check active entitlements
+    // MARK: - Check active subscription status
     func checkPremiumStatus() async {
         for await result in Transaction.currentEntitlements {
             if case .verified(let transaction) = result,
@@ -63,24 +63,17 @@ class StoreKitManager: ObservableObject {
             }
         }
 
-        // Fallback if no entitlement found but previously unlocked
-        await MainActor.run {
-            self.isPremiumPurchased = UserDefaults.standard.bool(forKey: "isPremiumUnlocked")
-        }
+        isPremiumPurchased = UserDefaults.standard.bool(forKey: "isPremiumUnlocked")
     }
 
     // MARK: - Unlock and notify
-    @MainActor
-    func unlockPremium() {
+    func unlockPremium() async {
         isPremiumPurchased = true
         UserDefaults.standard.set(true, forKey: "isPremiumUnlocked")
-        print("✅ Premium access unlocked")
-
         NotificationCenter.default.post(name: .premiumUnlocked, object: nil)
     }
 }
 
-// MARK: - Notification name
 extension Notification.Name {
     static let premiumUnlocked = Notification.Name("premiumUnlocked")
 }

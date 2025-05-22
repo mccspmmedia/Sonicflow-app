@@ -2,12 +2,12 @@ import SwiftUI
 
 struct NewHomeView: View {
     @EnvironmentObject var soundVM: SoundPlayerViewModel
-
     @State private var reminderDate: Date = Date()
     @State private var isReminderSet: Bool = false
     @State private var showTimerPopup = false
     @State private var selectedSoundForTimer: Sound? = nil
     @State private var showSettings = false
+    @State private var showSubscriptionBanner = false
 
     var body: some View {
         ZStack {
@@ -131,6 +131,13 @@ struct NewHomeView: View {
                 }
                 .padding(.bottom, 40)
             }
+
+            // MARK: - Subscription Banner
+            if showSubscriptionBanner && !StoreKitManager.shared.isPremiumPurchased {
+                PurchaseBannerView(showBanner: $showSubscriptionBanner)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                    .zIndex(10)
+            }
         }
         .sheet(isPresented: $showTimerPopup) {
             if let _ = selectedSoundForTimer {
@@ -140,6 +147,19 @@ struct NewHomeView: View {
         }
         .sheet(isPresented: $showSettings) {
             SettingsView()
+        }
+        .onAppear {
+            scheduleSubscriptionBanner()
+        }
+    }
+
+    private func scheduleSubscriptionBanner() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 120) {
+            if !StoreKitManager.shared.isPremiumPurchased {
+                withAnimation {
+                    showSubscriptionBanner = true
+                }
+            }
         }
     }
 }
