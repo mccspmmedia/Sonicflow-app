@@ -7,7 +7,7 @@ struct MainTabView: View {
         TabView(selection: $selectedTab) {
             ZStack {
                 VideoBackgroundView()
-                    .edgesIgnoringSafeArea(.all)
+                    .ignoresSafeArea()
                 NewHomeView()
             }
             .tabItem {
@@ -46,11 +46,16 @@ struct MainTabView: View {
         }
         .accentColor(.white)
         .onAppear {
-            let appearance = UITabBarAppearance()
-            appearance.configureWithOpaqueBackground()
-            appearance.backgroundColor = UIColor(named: "DarkBlue")
-            UITabBar.appearance().standardAppearance = appearance
-            UITabBar.appearance().scrollEdgeAppearance = appearance
+            setupTabBarAppearance()
         }
+    }
+
+    private func setupTabBarAppearance() {
+        let appearance = UITabBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.backgroundColor = UIColor(named: "DarkBlue")
+
+        UITabBar.appearance().standardAppearance = appearance
+        UITabBar.appearance().scrollEdgeAppearance = appearance
     }
 }

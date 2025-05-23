@@ -2,6 +2,7 @@ import SwiftUI
 
 struct SettingsView: View {
     @Environment(\.dismiss) var dismiss
+    @State private var showDeleteAlert = false
 
     var body: some View {
         VStack(spacing: 24) {
@@ -19,19 +20,17 @@ struct SettingsView: View {
                 .padding(.horizontal)
 
             VStack(spacing: 16) {
-                Button(action: {
-                    UserDefaults.standard.removeObject(forKey: "isPremiumUnlocked")
-                    NotificationCenter.default.post(name: .settingsDismissed, object: nil)
-                    print("🧹 Premium flag reset")
-                }) {
+                Button(role: .destructive) {
+                    showDeleteAlert = true
+                } label: {
                     HStack {
-                        Image(systemName: "lock.slash")
-                        Text("Reset Premium Access")
+                        Image(systemName: "trash")
+                        Text("Delete Account")
                     }
-                    .foregroundColor(.black)
+                    .foregroundColor(.white)
                     .padding()
                     .frame(maxWidth: .infinity)
-                    .background(Color.white)
+                    .background(Color.red)
                     .cornerRadius(12)
                 }
             }
@@ -55,9 +54,23 @@ struct SettingsView: View {
                 endPoint: .bottomTrailing
             ).ignoresSafeArea()
         )
+        .alert("Delete Account", isPresented: $showDeleteAlert) {
+            Button("Delete", role: .destructive) {
+                deleteAccount()
+            }
+            Button("Cancel", role: .cancel) { }
+        } message: {
+            Text("Are you sure you want to delete your account and all data?")
+        }
     }
-}
 
-#Preview {
-    SettingsView()
+    func deleteAccount() {
+        // Очистка локальных данных
+        UserProfileManager.shared.clear()
+        SoundStorageManager.deleteAll()
+
+        // Уведомление о выходе
+        NotificationCenter.default.post(name: .didRequestSignOut, object: nil)
+        print("🗑️ Account deleted")
+    }
 }

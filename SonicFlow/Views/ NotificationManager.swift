@@ -6,6 +6,8 @@ class NotificationManager {
 
     private init() {}
 
+    // MARK: - Разрешение на уведомления
+
     func requestAuthorizationIfNeeded(completion: @escaping (Bool) -> Void) {
         let center = UNUserNotificationCenter.current()
         center.getNotificationSettings { settings in
@@ -28,6 +30,8 @@ class NotificationManager {
         }
     }
 
+    // MARK: - Планирование уведомления
+
     func scheduleNotification(at date: Date, title: String, body: String) {
         let content = UNMutableNotificationContent()
         content.title = title
@@ -42,12 +46,21 @@ class NotificationManager {
 
         UNUserNotificationCenter.current().add(request) { error in
             if let error = error {
-                print("Error scheduling notification: \(error.localizedDescription)")
+                print("❌ Error scheduling notification: \(error.localizedDescription)")
             }
         }
     }
 
+    // MARK: - Отмена всех уведомлений
+
     func cancelAllNotifications() {
         UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
     }
+}
+
+// MARK: - Notification.Name Extension
+
+extension Notification.Name {
+    static let didRequestSignOut = Notification.Name("didRequestSignOut")
+    static let settingsDismissed = Notification.Name("settingsDismissed")
 }

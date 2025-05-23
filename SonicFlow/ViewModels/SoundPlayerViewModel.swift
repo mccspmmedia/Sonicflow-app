@@ -14,7 +14,7 @@ class SoundPlayerViewModel: ObservableObject {
 
     @Published var isPremiumUnlocked: Bool {
         didSet {
-            UserDefaults.standard.set(isPremiumUnlocked, forKey: "isPremiumUnlocked")
+            UserDefaultsManager.shared.set(isPremiumUnlocked, forKey: "isPremiumUnlocked")
         }
     }
 
@@ -85,11 +85,11 @@ class SoundPlayerViewModel: ObservableObject {
     }
 
     init() {
-        self.isPremiumUnlocked = UserDefaults.standard.bool(forKey: "isPremiumUnlocked")
+        self.isPremiumUnlocked = UserDefaultsManager.shared.getBool(forKey: "isPremiumUnlocked")
         setupAudioSession()
         allSounds = allAvailableSounds
-        loadRecentlyPlayed()
-        loadFavoriteSounds()
+        recentlyPlayed = SoundStorageManager.loadRecent()
+        favoriteSounds = SoundStorageManager.loadFavorites()
         observePremiumUnlock()
         observeSettingsReset()
     }
@@ -102,7 +102,7 @@ class SoundPlayerViewModel: ObservableObject {
 
     private func observeSettingsReset() {
         NotificationCenter.default.addObserver(forName: .settingsDismissed, object: nil, queue: .main) { [weak self] _ in
-            self?.isPremiumUnlocked = UserDefaults.standard.bool(forKey: "isPremiumUnlocked")
+            self?.isPremiumUnlocked = UserDefaultsManager.shared.getBool(forKey: "isPremiumUnlocked")
             print("🔄 Refetched isPremiumUnlocked: \(self?.isPremiumUnlocked ?? false)")
         }
     }
@@ -209,7 +209,7 @@ class SoundPlayerViewModel: ObservableObject {
         } else {
             favoriteSounds.append(sound)
         }
-        saveFavoriteSounds()
+        SoundStorageManager.saveFavorites(favoriteSounds)
     }
 
     func addToRecentlyPlayed(sound: Sound) {
@@ -220,33 +220,7 @@ class SoundPlayerViewModel: ObservableObject {
         if recentlyPlayed.count > 5 {
             recentlyPlayed = Array(recentlyPlayed.prefix(5))
         }
-        saveRecentlyPlayed()
-    }
-
-    private func saveRecentlyPlayed() {
-        if let data = try? JSONEncoder().encode(recentlyPlayed) {
-            UserDefaults.standard.set(data, forKey: "recentlyPlayed")
-        }
-    }
-
-    private func loadRecentlyPlayed() {
-        if let data = UserDefaults.standard.data(forKey: "recentlyPlayed"),
-           let saved = try? JSONDecoder().decode([Sound].self, from: data) {
-            recentlyPlayed = saved
-        }
-    }
-
-    private func saveFavoriteSounds() {
-        if let data = try? JSONEncoder().encode(favoriteSounds) {
-            UserDefaults.standard.set(data, forKey: "favoriteSounds")
-        }
-    }
-
-    private func loadFavoriteSounds() {
-        if let data = UserDefaults.standard.data(forKey: "favoriteSounds"),
-           let saved = try? JSONDecoder().decode([Sound].self, from: data) {
-            favoriteSounds = saved
-        }
+        SoundStorageManager.saveRecent(recentlyPlayed)
     }
 
     private func markSoundAsPlaying(_ sound: Sound) {
@@ -261,8 +235,3 @@ class SoundPlayerViewModel: ObservableObject {
         }
     }
 }
-
-extension Notification.Name {
-    static let settingsDismissed = Notification.Name("settingsDismissed")
-}
-

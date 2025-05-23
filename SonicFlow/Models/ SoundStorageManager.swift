@@ -4,42 +4,47 @@ struct SoundStorageManager {
     static let recentKey = "recentlyPlayed"
     static let favoriteKey = "favoriteSounds"
 
+    private static let defaults = UserDefaultsManager.shared
+
     // MARK: - Save
 
-    static func saveRecent(_ sounds: [Sound]) {
-        if let data = try? JSONEncoder().encode(sounds) {
-            UserDefaults.standard.set(data, forKey: recentKey)
-        }
+    @discardableResult
+    static func saveRecent(_ sounds: [Sound]) -> Bool {
+        save(sounds, forKey: recentKey)
     }
 
-    static func saveFavorites(_ sounds: [Sound]) {
-        if let data = try? JSONEncoder().encode(sounds) {
-            UserDefaults.standard.set(data, forKey: favoriteKey)
-        }
+    @discardableResult
+    static func saveFavorites(_ sounds: [Sound]) -> Bool {
+        save(sounds, forKey: favoriteKey)
+    }
+
+    private static func save(_ sounds: [Sound], forKey key: String) -> Bool {
+        defaults.save(sounds, forKey: key)
+        return true
     }
 
     // MARK: - Load
 
     static func loadRecent() -> [Sound] {
-        guard let data = UserDefaults.standard.data(forKey: recentKey),
-              let sounds = try? JSONDecoder().decode([Sound].self, from: data) else {
-            return []
-        }
-        return sounds
+        load(forKey: recentKey)
     }
 
     static func loadFavorites() -> [Sound] {
-        guard let data = UserDefaults.standard.data(forKey: favoriteKey),
-              let sounds = try? JSONDecoder().decode([Sound].self, from: data) else {
-            return []
-        }
-        return sounds
+        load(forKey: favoriteKey)
     }
 
-    // MARK: - Delete All
+    private static func load(forKey key: String) -> [Sound] {
+        return defaults.load(forKey: key, as: [Sound].self) ?? []
+    }
+
+    // MARK: - Delete
 
     static func deleteAll() {
-        UserDefaults.standard.removeObject(forKey: recentKey)
-        UserDefaults.standard.removeObject(forKey: favoriteKey)
+        clear(forKey: recentKey)
+        clear(forKey: favoriteKey)
+    }
+
+    static func clear(forKey key: String) {
+        defaults.remove(forKey: key)
     }
 }
