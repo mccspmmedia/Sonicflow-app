@@ -33,17 +33,17 @@ struct SubscriptionView: View {
                 ProgressView().tint(.white)
             } else {
                 VStack(spacing: 12) {
-                    // Кнопка подписки
-                    Button(action: {
+                    // ✅ Кнопка подписки с прямым async
+                    Button {
+                        isProcessing = true
                         Task {
-                            isProcessing = true
                             await storeKit.purchasePremium()
                             isProcessing = false
                             if storeKit.isPremiumPurchased {
                                 dismiss()
                             }
                         }
-                    }) {
+                    } label: {
                         Text("Subscribe for $9.99 / month")
                             .font(.headline)
                             .foregroundColor(.black)

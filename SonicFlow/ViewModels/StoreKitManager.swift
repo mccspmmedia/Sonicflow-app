@@ -36,8 +36,9 @@ class StoreKitManager: ObservableObject {
         do {
             let result = try await product.purchase()
             switch result {
-            case .success(let verification):
-                if case .verified(let transaction) = verification {
+            case .success(let verificationResult):
+                if case .verified(let transaction) = verificationResult {
+                    await transaction.finish()
                     await unlockPremium()
                     try? await AppStore.sync()
                 } else {
@@ -63,6 +64,7 @@ class StoreKitManager: ObservableObject {
             }
         }
 
+        // fallback — возможно разблокировали ранее
         isPremiumPurchased = UserDefaults.standard.bool(forKey: "isPremiumUnlocked")
     }
 

@@ -5,6 +5,8 @@ struct MainTabView: View {
 
     var body: some View {
         TabView(selection: $selectedTab) {
+            
+            // 🏠 Главная вкладка — с видеофоном
             ZStack {
                 VideoBackgroundView()
                     .ignoresSafeArea()
@@ -16,6 +18,7 @@ struct MainTabView: View {
             }
             .tag(0)
 
+            // 🍃 Nature
             NatureView()
                 .tabItem {
                     Image(systemName: "leaf.fill")
@@ -23,6 +26,7 @@ struct MainTabView: View {
                 }
                 .tag(1)
 
+            // 🌙 Sleep
             SleepView()
                 .tabItem {
                     Image(systemName: "moon.fill")
@@ -30,6 +34,7 @@ struct MainTabView: View {
                 }
                 .tag(2)
 
+            // 🧘 Meditation
             MeditationView()
                 .tabItem {
                     Image(systemName: "sparkles")
@@ -37,6 +42,7 @@ struct MainTabView: View {
                 }
                 .tag(3)
 
+            // 🌆 Ambience
             AmbienceView()
                 .tabItem {
                     Image(systemName: "waveform.path.ecg")

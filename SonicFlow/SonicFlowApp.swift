@@ -13,21 +13,14 @@ struct SonicFlowApp: App {
 
     var body: some Scene {
         WindowGroup {
-            Group {
-                if CommandLine.arguments.contains("-isUITest") {
-                    MainTabView() // 🔁 Обход логина для UI-тестов
-                } else {
-                    WelcomeView()
-                }
-            }
-            .environmentObject(soundVM)
-            .environmentObject(videoVM)
-            .preferredColorScheme(.dark)
+            MainTabView() // ✅ заменили NewHomeView на MainTabView
+                .environmentObject(soundVM)
+                .environmentObject(videoVM)
+                .preferredColorScheme(.dark)
         }
     }
 }
 
-// ✅ Превью (используется только в SwiftUI Preview Canvas)
 #Preview {
     MainTabView()
         .environmentObject(SoundPlayerViewModel())

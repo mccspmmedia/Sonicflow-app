@@ -39,6 +39,16 @@ struct UserDefaultsManager {
 
     func load<T: Codable>(forKey key: String, as type: T.Type) -> T? {
         guard let data = defaults.data(forKey: key) else { return nil }
-        return try? JSONDecoder().decode(type, from: data)
+        return try? JSONDecoder().decode(T.self, from: data)
+    }
+
+    // MARK: - Полное удаление данных
+
+    func clearAll() {
+        if let appDomain = Bundle.main.bundleIdentifier {
+            defaults.removePersistentDomain(forName: appDomain)
+            defaults.synchronize()
+            print("✅ Все данные удалены из UserDefaults")
+        }
     }
 }

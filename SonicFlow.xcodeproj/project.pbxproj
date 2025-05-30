@@ -7,11 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BB065B332DE9D77300A7B2F3 /* ocean_background.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = BB065B322DE9D77300A7B2F3 /* ocean_background.mp4 */; };
 		BB1680142DD2418E00191AB9 /* client_657116176614-lm58c8540jfunbuqpqvt7iie3aojlha2.apps.googleusercontent.com.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB1680132DD2418E00191AB9 /* client_657116176614-lm58c8540jfunbuqpqvt7iie3aojlha2.apps.googleusercontent.com.plist */; };
 		BB1680172DD2425800191AB9 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = BB1680162DD2425800191AB9 /* GoogleSignIn */; };
 		BB1680192DD2425800191AB9 /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = BB1680182DD2425800191AB9 /* GoogleSignInSwift */; };
 		BB9488952DDF207A002FBC81 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB9488942DDF207A002FBC81 /* StoreKit.framework */; };
-		BBAD0B5A2DCE6DAF00F4A257 /* ocean_background.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = BBAD0B592DCE6DAF00F4A257 /* ocean_background.mp4 */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -32,12 +32,12 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		BB065B322DE9D77300A7B2F3 /* ocean_background.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = ocean_background.mp4; sourceTree = "<group>"; };
 		BB1680132DD2418E00191AB9 /* client_657116176614-lm58c8540jfunbuqpqvt7iie3aojlha2.apps.googleusercontent.com.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "client_657116176614-lm58c8540jfunbuqpqvt7iie3aojlha2.apps.googleusercontent.com.plist"; sourceTree = "<group>"; };
 		BB76EC092DC649AA00141171 /* SonicFlow.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SonicFlow.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB76EC162DC649AB00141171 /* SonicFlowTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SonicFlowTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB76EC202DC649AB00141171 /* SonicFlowUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SonicFlowUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB9488942DDF207A002FBC81 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
-		BBAD0B592DCE6DAF00F4A257 /* ocean_background.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; name = ocean_background.mp4; path = ../../Downloads/ocean_background.mp4; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -45,6 +45,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
+				Views/Untitled.swift,
 			);
 			target = BB76EC082DC649AA00141171 /* SonicFlow */;
 		};
@@ -102,7 +103,7 @@
 		BB76EC002DC649AA00141171 = {
 			isa = PBXGroup;
 			children = (
-				BBAD0B592DCE6DAF00F4A257 /* ocean_background.mp4 */,
+				BB065B322DE9D77300A7B2F3 /* ocean_background.mp4 */,
 				BB76EC0B2DC649AA00141171 /* SonicFlow */,
 				BB76EC192DC649AB00141171 /* SonicFlowTests */,
 				BB76EC232DC649AB00141171 /* SonicFlowUITests */,
@@ -256,7 +257,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BBAD0B5A2DCE6DAF00F4A257 /* ocean_background.mp4 in Resources */,
+				BB065B332DE9D77300A7B2F3 /* ocean_background.mp4 in Resources */,
 				BB1680142DD2418E00191AB9 /* client_657116176614-lm58c8540jfunbuqpqvt7iie3aojlha2.apps.googleusercontent.com.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

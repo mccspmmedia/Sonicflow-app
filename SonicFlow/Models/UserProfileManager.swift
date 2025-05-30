@@ -18,10 +18,18 @@ class UserProfileManager {
         set { defaults.set(newValue, forKey: "isSignedIn") }
     }
 
-    // MARK: - Очистка при удалении аккаунта
+    // MARK: - Полная очистка при удалении аккаунта
 
     func clear() {
+        // Удаление всех пользовательских ключей, относящихся к профилю
         defaults.remove(forKey: "userName")
+        defaults.remove(forKey: "userEmail") // если есть
+        defaults.remove(forKey: "profileImageURL") // если есть
+        defaults.remove(forKey: "signInMethod") // Google / Apple и т.п.
+        
+        // Явно сбросить флаг входа
         defaults.set(false, forKey: "isSignedIn")
+
+        print("✅ UserProfileManager: профиль очищен")
     }
 }

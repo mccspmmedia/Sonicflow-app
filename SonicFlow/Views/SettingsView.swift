@@ -1,12 +1,14 @@
 import SwiftUI
+import GoogleSignIn
 
 struct SettingsView: View {
     @Environment(\.dismiss) var dismiss
+    @AppStorage("isLoggedIn") private var isLoggedIn = true
     @State private var showDeleteAlert = false
 
     var body: some View {
         VStack(spacing: 24) {
-            Spacer()
+            Spacer(minLength: 40)
 
             Text("App Settings")
                 .font(.largeTitle.bold())
@@ -65,12 +67,22 @@ struct SettingsView: View {
     }
 
     func deleteAccount() {
-        // Очистка локальных данных
+        // ✅ Google Sign Out
+        GIDSignIn.sharedInstance.signOut()
+
+        // ✅ Apple Sign Out (если авторизация через Apple используется)
+        AppleAuthManager.shared.signOut()
+
+        // ✅ Очистка всех пользовательских данных
         UserProfileManager.shared.clear()
         SoundStorageManager.deleteAll()
+        UserDefaultsManager.shared.clearAll()
 
-        // Уведомление о выходе
+        // ✅ Обновление состояния авторизации
+        isLoggedIn = false
         NotificationCenter.default.post(name: .didRequestSignOut, object: nil)
-        print("🗑️ Account deleted")
+
+        print("🗑️ Account deleted and user signed out")
+        dismiss()
     }
 }
