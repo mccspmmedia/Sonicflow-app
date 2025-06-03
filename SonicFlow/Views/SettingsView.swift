@@ -15,13 +15,14 @@ struct SettingsView: View {
                 .multilineTextAlignment(.center)
                 .foregroundColor(.white)
 
-            Text("Manage your app preferences and reset premium access if needed.")
+            Text("Manage your preferences and reset premium access if needed.")
                 .font(.body)
                 .multilineTextAlignment(.center)
                 .foregroundColor(.white.opacity(0.8))
                 .padding(.horizontal)
 
             VStack(spacing: 16) {
+                // Кнопка удаления аккаунта
                 Button(role: .destructive) {
                     showDeleteAlert = true
                 } label: {
@@ -38,6 +39,7 @@ struct SettingsView: View {
             }
             .padding(.horizontal)
 
+            // Кнопка закрытия
             Button(action: {
                 dismiss()
             }) {
@@ -54,35 +56,38 @@ struct SettingsView: View {
                 colors: [Color.black, Color.blue.opacity(0.4)],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
-            ).ignoresSafeArea()
+            )
+            .ignoresSafeArea()
         )
         .alert("Delete Account", isPresented: $showDeleteAlert) {
             Button("Delete", role: .destructive) {
                 deleteAccount()
             }
-            Button("Cancel", role: .cancel) { }
+            Button("Cancel", role: .cancel) {}
         } message: {
-            Text("Are you sure you want to delete your account and all data?")
+            Text("Are you sure you want to permanently delete your account and all data?")
         }
     }
 
     func deleteAccount() {
-        // ✅ Google Sign Out
+        // 🔐 Google Sign Out
         GIDSignIn.sharedInstance.signOut()
 
-        // ✅ Apple Sign Out (если авторизация через Apple используется)
-        AppleAuthManager.shared.signOut()
+        // 🍎 Apple Sign Out (если используется Apple ID авторизация)
+        if AppleAuthManager.shared.isSignedIn {
+            AppleAuthManager.shared.signOut()
+        }
 
-        // ✅ Очистка всех пользовательских данных
+        // 🗑️ Очистка всех пользовательских данных
         UserProfileManager.shared.clear()
         SoundStorageManager.deleteAll()
         UserDefaultsManager.shared.clearAll()
 
-        // ✅ Обновление состояния авторизации
+        // 🚪 Завершение сессии
         isLoggedIn = false
         NotificationCenter.default.post(name: .didRequestSignOut, object: nil)
 
-        print("🗑️ Account deleted and user signed out")
+        print("🧼 Account deleted. User signed out.")
         dismiss()
     }
 }

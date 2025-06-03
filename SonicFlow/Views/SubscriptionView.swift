@@ -33,7 +33,6 @@ struct SubscriptionView: View {
                 ProgressView().tint(.white)
             } else {
                 VStack(spacing: 12) {
-                    // ✅ Кнопка подписки с прямым async
                     Button {
                         isProcessing = true
                         Task {
@@ -53,7 +52,6 @@ struct SubscriptionView: View {
                             .cornerRadius(12)
                     }
 
-                    // Кнопка восстановления покупки
                     RestorePurchaseButton(isProcessing: $isProcessing) {
                         dismiss()
                     }
@@ -66,6 +64,18 @@ struct SubscriptionView: View {
             }
             .foregroundColor(.white.opacity(0.8))
 
+            // ✅ Terms and Privacy links
+            HStack(spacing: 24) {
+                Link("Terms of Use", destination: URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")!)
+                    .font(.footnote)
+                    .foregroundColor(.white.opacity(0.7))
+
+                Link("Privacy Policy", destination: URL(string: "https://www.apple.com/legal/privacy/")!)
+                    .font(.footnote)
+                    .foregroundColor(.white.opacity(0.7))
+            }
+            .padding(.top, 16)
+
             Spacer()
         }
         .padding()
@@ -77,8 +87,4 @@ struct SubscriptionView: View {
             ).ignoresSafeArea()
         )
     }
-}
-
-#Preview {
-    SubscriptionView()
 }

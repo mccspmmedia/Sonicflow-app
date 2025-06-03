@@ -1,52 +1,47 @@
 import SwiftUI
 
 struct MainTabView: View {
+    @AppStorage("isLoggedIn") private var isLoggedIn = true
     @State private var selectedTab = 0
 
     var body: some View {
         TabView(selection: $selectedTab) {
             
-            // 🏠 Главная вкладка — с видеофоном
+            // 🏠 Главная (c видеофоном)
             ZStack {
-                VideoBackgroundView()
-                    .ignoresSafeArea()
+                VideoBackgroundView().ignoresSafeArea()
                 NewHomeView()
             }
             .tabItem {
-                Image(systemName: "house.fill")
-                Text("Home")
+                Label("Home", systemImage: "house.fill")
             }
             .tag(0)
 
             // 🍃 Nature
             NatureView()
                 .tabItem {
-                    Image(systemName: "leaf.fill")
-                    Text("Nature")
+                    Label("Nature", systemImage: "leaf.fill")
                 }
                 .tag(1)
 
             // 🌙 Sleep
             SleepView()
                 .tabItem {
-                    Image(systemName: "moon.fill")
-                    Text("Sleep")
+                    Label("Sleep", systemImage: "moon.fill")
                 }
                 .tag(2)
 
             // 🧘 Meditation
             MeditationView()
                 .tabItem {
-                    Image(systemName: "sparkles")
-                    Text("Meditation")
+                    Label("Meditation", systemImage: "sparkles")
                 }
                 .tag(3)
 
             // 🌆 Ambience
             AmbienceView()
                 .tabItem {
-                    Image(systemName: "waveform.path.ecg")
-                    Text("Ambience")
+                    Label("Ambience", systemImage: "waveform.path.ecg")
                 }
                 .tag(4)
         }
@@ -54,13 +49,16 @@ struct MainTabView: View {
         .onAppear {
             setupTabBarAppearance()
         }
+        .fullScreenCover(isPresented: .constant(!isLoggedIn)) {
+            LoginSheetView()
+        }
     }
 
     private func setupTabBarAppearance() {
         let appearance = UITabBarAppearance()
         appearance.configureWithOpaqueBackground()
-        appearance.backgroundColor = UIColor(named: "DarkBlue")
-
+        appearance.backgroundColor = UIColor(named: "DarkBlue") ?? UIColor.systemBlue
+        
         UITabBar.appearance().standardAppearance = appearance
         UITabBar.appearance().scrollEdgeAppearance = appearance
     }
