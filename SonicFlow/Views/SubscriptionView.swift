@@ -46,7 +46,7 @@ struct SubscriptionView: View {
                         Text("Subscribe for $9.99 / month")
                             .font(.headline)
                             .foregroundColor(.black)
-                            .frame(maxWidth: .infinity)
+                            .frame(maxWidth: 300) // UX улучшение
                             .padding()
                             .background(Color.white)
                             .cornerRadius(12)
@@ -63,6 +63,13 @@ struct SubscriptionView: View {
                 dismiss()
             }
             .foregroundColor(.white.opacity(0.8))
+
+            // ⚠️ Auto-renewal notice
+            Text("Subscription auto-renews monthly unless cancelled at least 24 hours before the end of the period. You can manage your subscription in your App Store account settings.")
+                .font(.caption2)
+                .foregroundColor(.white.opacity(0.6))
+                .multilineTextAlignment(.center)
+                .padding(.horizontal)
 
             // ✅ Terms and Privacy links
             HStack(spacing: 24) {

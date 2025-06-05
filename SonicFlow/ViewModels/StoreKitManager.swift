@@ -6,7 +6,7 @@ class StoreKitManager: ObservableObject {
     static let shared = StoreKitManager()
 
     @Published var isPremiumPurchased: Bool = false
-    @Published var products: [Product] = [] // 📌 Для UI подписки
+    @Published var products: [Product] = []
 
     private let premiumProductID = "sonicflow.premium"
 
@@ -50,20 +50,24 @@ class StoreKitManager: ObservableObject {
 
             switch result {
             case .success(let verification):
-                if case .verified(let transaction) = verification {
+                switch verification {
+                case .verified(let transaction):
                     print("✅ Purchase verified: \(transaction.productID)")
                     await transaction.finish()
                     await unlockPremium()
                     try? await AppStore.sync()
-                } else {
-                    print("❌ Purchase could not be verified")
+                case .unverified(_, let error):
+                    print("❌ Unverified transaction: \(error.localizedDescription)")
                 }
+
+            case .pending:
+                print("🕒 Purchase is pending approval")
 
             case .userCancelled:
                 print("⚠️ User cancelled the purchase")
 
             default:
-                print("⚠️ Purchase failed or pending")
+                print("⚠️ Purchase failed or unknown state")
             }
 
         } catch {
@@ -71,9 +75,20 @@ class StoreKitManager: ObservableObject {
         }
     }
 
-    // MARK: - Проверка подписки
+    // MARK: - Восстановление покупки
+    func restorePurchase() async {
+        do {
+            print("🔁 Restoring purchases...")
+            try await AppStore.sync()
+            await checkPremiumStatus()
+        } catch {
+            print("❌ Restore failed: \(error.localizedDescription)")
+        }
+    }
+
+    // MARK: - Проверка статуса подписки
     func checkPremiumStatus() async {
-        print("🔄 Checking current entitlements...")
+        print("🔍 Checking current entitlements...")
 
         for await result in Transaction.currentEntitlements {
             if case .verified(let transaction) = result,

@@ -2,24 +2,27 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>UIBackgroundModes</key>
-    <array>
-        <string>audio</string>
-        <string>fetch</string>
-        <string>remote-notification</string>
-    </array>
-    
-    <key>CFBundleURLTypes</key>
-    <array>
-        <dict>
-            <key>CFBundleURLSchemes</key>
-            <array>
-                <string>com.googleusercontent.apps.657116176614-lm58c8540jfunbuqpqvt7iie3aojlha2</string>
-            </array>
-        </dict>
-    </array>
-
-    <key>NSUserNotificationUsageDescription</key>
-    <string>We use notifications to remind you to relax and listen to calming sounds.</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.657116176614-lm58c8540jfunbuqpqvt7iie3aojlha2</string>
+			</array>
+		</dict>
+	</array>
+	<key>NSUserNotificationUsageDescription</key>
+	<string>We use notifications to remind you to relax and listen to calming sounds.</string>
+	<key>Targeted Device Family</key>
+	<array>
+		<string>1</string>
+		<string>2</string>
+	</array>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>audio</string>
+		<string>fetch</string>
+		<string>remote-notification</string>
+	</array>
 </dict>
 </plist>
