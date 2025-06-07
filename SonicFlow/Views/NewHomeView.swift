@@ -2,6 +2,8 @@ import SwiftUI
 
 struct NewHomeView: View {
     @EnvironmentObject var soundVM: SoundPlayerViewModel
+    @AppStorage("isLoggedIn") private var isLoggedIn = false
+
     @State private var reminderDate: Date = Date()
     @State private var isReminderSet: Bool = false
     @State private var showTimerPopup = false
@@ -17,77 +19,20 @@ struct NewHomeView: View {
 
             ScrollView {
                 VStack(spacing: 24) {
-                    // MARK: - Logo Header
-                    VStack(spacing: 6) {
-                        HStack {
-                            // Левая кнопка: Войти
-                            Button(action: {
-                                showLoginSheet = true
-                            }) {
-                                Image(systemName: "person.crop.circle")
-                                    .foregroundColor(.white)
-                                    .imageScale(.large)
-                                    .padding()
-                            }
+                    // Header (логотип + кнопки)
+                    headerView
 
-                            Spacer()
-
-                            // Правая кнопка: Настройки
-                            Button(action: {
-                                showSettings = true
-                            }) {
-                                Image(systemName: "gearshape.fill")
-                                    .foregroundColor(.white)
-                                    .imageScale(.large)
-                                    .padding()
-                            }
-                        }
-
-                        Text("SONIC FLOW")
-                            .font(.custom("Didot", size: 36))
-                            .foregroundColor(.white)
-                            .fontWeight(.semibold)
-
-                        HStack(spacing: 12) {
-                            Text("~")
-                            Text("NATURE • SLEEP • MEDITATION")
-                            Text("~")
-                        }
-                        .font(.custom("Georgia", size: 14))
-                        .foregroundColor(.white.opacity(0.8))
-                    }
-                    .padding(.top, 60)
-
-                    // MARK: - Reminder Block
+                    // Напоминание
                     ReminderBlockView(
                         selectedTime: $reminderDate,
                         isReminderSet: $isReminderSet,
-                        setReminder: {
-                            NotificationManager.shared.requestAuthorizationIfNeeded { granted in
-                                if granted {
-                                    NotificationManager.shared.scheduleNotification(
-                                        at: reminderDate,
-                                        title: "Time to relax",
-                                        body: "Take a moment to enjoy peaceful sounds."
-                                    )
-                                    isReminderSet = true
-                                }
-                            }
-                        },
-                        cancelReminder: {
-                            NotificationManager.shared.cancelAllNotifications()
-                            isReminderSet = false
-                        }
+                        setReminder: setReminder,
+                        cancelReminder: cancelReminder
                     )
 
-                    // MARK: - Playing Now
+                    // Playing Now
                     if let current = soundVM.currentSound {
-                        VStack(alignment: .leading, spacing: 12) {
-                            Text("Playing Now")
-                                .font(.headline)
-                                .foregroundColor(.white)
-                                .padding(.horizontal, 16)
-
+                        section(title: "Playing Now") {
                             CompactSoundCardView(
                                 sound: current,
                                 onTimerTap: {
@@ -96,18 +41,12 @@ struct NewHomeView: View {
                                 },
                                 highlightActive: false
                             )
-                            .padding(.horizontal, 16)
                         }
                     }
 
-                    // MARK: - Recently Played
+                    // Recently Played
                     if !soundVM.recentlyPlayed.isEmpty {
-                        VStack(alignment: .leading, spacing: 12) {
-                            Text("You heard recently")
-                                .font(.headline)
-                                .foregroundColor(.white)
-                                .padding(.horizontal, 16)
-
+                        section(title: "You heard recently") {
                             CustomCarousel(items: soundVM.recentlyPlayed) { sound in
                                 CompactSoundCardView(
                                     sound: sound,
@@ -121,14 +60,9 @@ struct NewHomeView: View {
                         }
                     }
 
-                    // MARK: - Favorites
+                    // Favorites
                     if !soundVM.favoriteSounds.isEmpty {
-                        VStack(alignment: .leading, spacing: 12) {
-                            Text("Favorites")
-                                .font(.headline)
-                                .foregroundColor(.white)
-                                .padding(.horizontal, 16)
-
+                        section(title: "Favorites") {
                             CustomCarousel(items: soundVM.favoriteSounds) { sound in
                                 CompactSoundCardView(
                                     sound: sound,
@@ -145,7 +79,7 @@ struct NewHomeView: View {
                 .padding(.bottom, 40)
             }
 
-            // MARK: - Subscription Banner
+            // Баннер подписки
             if showSubscriptionBanner && !StoreKitManager.shared.isPremiumPurchased {
                 PurchaseBannerView(showBanner: $showSubscriptionBanner)
                     .transition(.move(edge: .bottom).combined(with: .opacity))
@@ -153,20 +87,91 @@ struct NewHomeView: View {
             }
         }
         .sheet(isPresented: $showTimerPopup) {
-            if let _ = selectedSoundForTimer {
-                TimerPopupView()
-                    .environmentObject(soundVM)
+            if selectedSoundForTimer != nil {
+                TimerPopupView().environmentObject(soundVM)
             }
         }
         .sheet(isPresented: $showSettings) {
             SettingsView()
         }
         .sheet(isPresented: $showLoginSheet) {
-            LoginSheetView()
+            LoginSheetView(isPresented: $showLoginSheet)
         }
         .onAppear {
             scheduleSubscriptionBanner()
         }
+    }
+
+    private var headerView: some View {
+        VStack(spacing: 6) {
+            HStack {
+                if !isLoggedIn {
+                    Button {
+                        showLoginSheet = true
+                    } label: {
+                        Image(systemName: "person.crop.circle")
+                            .foregroundColor(.white)
+                            .imageScale(.large)
+                            .padding()
+                    }
+                }
+
+                Spacer()
+
+                Button {
+                    showSettings = true
+                } label: {
+                    Image(systemName: "gearshape.fill")
+                        .foregroundColor(.white)
+                        .imageScale(.large)
+                        .padding()
+                }
+            }
+
+            Text("SONIC FLOW")
+                .font(.custom("Didot", size: 36))
+                .foregroundColor(.white)
+                .fontWeight(.semibold)
+
+            HStack(spacing: 12) {
+                Text("~")
+                Text("NATURE • SLEEP • MEDITATION")
+                Text("~")
+            }
+            .font(.custom("Georgia", size: 14))
+            .foregroundColor(.white.opacity(0.8))
+        }
+        .padding(.top, 60)
+    }
+
+    private func section<Content: View>(title: String, @ViewBuilder content: @escaping () -> Content) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text(title)
+                .font(.headline)
+                .foregroundColor(.white)
+                .padding(.horizontal, 16)
+
+            content()
+                .padding(.horizontal, 16)
+        }
+    }
+
+    private func setReminder() {
+        NotificationManager.shared.requestAuthorizationIfNeeded { granted in
+            if granted {
+                NotificationManager.shared.scheduleNotification(
+                    at: reminderDate,
+                    title: "Time to relax",
+                    body: "Take a moment to enjoy peaceful sounds."
+                )
+                isReminderSet = true
+            }
+        }
+    }
+
+    private func cancelReminder() {
+        NotificationManager.shared.cancelAllNotifications()
+        isReminderSet = false
     }
 
     private func scheduleSubscriptionBanner() {

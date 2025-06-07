@@ -2,7 +2,7 @@ import SwiftUI
 import GoogleSignIn
 
 struct GoogleSignInButton: View {
-    @AppStorage("isLoggedIn") var isLoggedIn = false
+    @AppStorage("isLoggedIn") private var isLoggedIn = false
     @Binding var isPresented: Bool
 
     private let clientID = "657116176614-lm58c8540jfunbuqpqvt7iie3aojlha2.apps.googleusercontent.com"
@@ -24,10 +24,10 @@ struct GoogleSignInButton: View {
 
     private func handleGoogleSignIn() {
         guard let windowScene = UIApplication.shared.connectedScenes
-                .compactMap({ $0 as? UIWindowScene })
-                .first(where: { $0.activationState == .foregroundActive }),
+            .compactMap({ $0 as? UIWindowScene })
+            .first(where: { $0.activationState == .foregroundActive }),
               let rootVC = windowScene.windows.first(where: { $0.isKeyWindow })?.rootViewController else {
-            print("❌ Could not find root view controller")
+            print("❌ Could not find rootViewController")
             return
         }
 
@@ -36,16 +36,16 @@ struct GoogleSignInButton: View {
 
         GIDSignIn.sharedInstance.signIn(withPresenting: rootVC) { result, error in
             if let error = error {
-                print("❌ Google Sign-In error: \(error.localizedDescription)")
+                print("❌ Google Sign-In failed: \(error.localizedDescription)")
                 return
             }
 
             guard let user = result?.user else {
-                print("❌ No user returned")
+                print("❌ Google Sign-In returned no user")
                 return
             }
 
-            print("✅ Google Sign-In success — email: \(user.profile?.email ?? "Unknown")")
+            print("✅ Google Sign-In success. Email: \(user.profile?.email ?? "No Email")")
             isLoggedIn = true
             isPresented = false
         }

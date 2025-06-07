@@ -1,34 +1,33 @@
 import SwiftUI
 
 struct LoginSheetView: View {
-    @AppStorage("isLoggedIn") var isLoggedIn = false
-    @Environment(\.dismiss) var dismiss
-    @State private var isApplePresented = true
-    @State private var isGooglePresented = true
+    @AppStorage("isLoggedIn") private var isLoggedIn = false
+    @Binding var isPresented: Bool
 
     var body: some View {
         VStack(spacing: 24) {
             Spacer(minLength: 40)
 
+            // Заголовок
             Text("Sign in to unlock more features")
                 .font(.title2.bold())
                 .multilineTextAlignment(.center)
                 .foregroundColor(.white)
                 .padding(.horizontal)
 
-            // 🔐 Apple Sign In
-            AppleSignInButton(isPresented: $isApplePresented)
+            // 🔐 Apple Sign-In
+            AppleSignInButton(isPresented: $isPresented)
                 .frame(height: 50)
                 .padding(.horizontal)
 
-            // 🔐 Google Sign In
-            GoogleSignInButton(isPresented: $isGooglePresented)
+            // 🔐 Google Sign-In
+            GoogleSignInButton(isPresented: $isPresented)
                 .frame(height: 50)
                 .padding(.horizontal)
 
-            // 🔙 Закрыть без входа
+            // ❌ Manual Close
             Button("Close") {
-                dismiss()
+                isPresented = false
             }
             .foregroundColor(.white.opacity(0.7))
             .padding(.top, 16)
@@ -44,5 +43,14 @@ struct LoginSheetView: View {
             )
             .ignoresSafeArea()
         )
+        .onAppear {
+            // Актуализируем статус авторизации Apple при каждом показе
+            AppleAuthManager.shared.checkCredentialStateAndUpdateStatus()
+        }
+        .onChange(of: isLoggedIn) { loggedIn in
+            if loggedIn {
+                isPresented = false
+            }
+        }
     }
 }

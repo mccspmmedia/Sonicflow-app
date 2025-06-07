@@ -32,32 +32,53 @@ struct SubscriptionView: View {
             .padding()
 
             if isProcessing {
-                ProgressView().tint(.white)
+                ProgressView()
+                    .tint(.white)
             } else {
                 VStack(spacing: 12) {
                     Button {
                         isProcessing = true
                         Task {
-                            if storeKit.products.isEmpty {
+                            guard let product = storeKit.products.first else {
                                 isProcessing = false
-                                errorMessage = "Product not available. Please try again later."
+                                errorMessage = "No available product found. Please try again later."
                                 showError = true
                                 return
                             }
 
                             do {
-                                try await storeKit.purchasePremium()
-                                isProcessing = false
-                                if storeKit.isPremiumPurchased {
-                                    dismiss()
-                                } else {
-                                    errorMessage = "Purchase did not complete."
+                                let result = try await product.purchase()
+
+                                switch result {
+                                case .success(let verificationResult):
+                                    switch verificationResult {
+                                    case .verified(let transaction):
+                                        print("✅ Verified transaction: \(transaction.productID)")
+                                        await transaction.finish()
+                                        await storeKit.unlockPremium()
+                                        isProcessing = false
+                                        dismiss()
+                                    case .unverified(_, let error):
+                                        print("❌ Unverified transaction: \(error.localizedDescription)")
+                                        errorMessage = "Transaction could not be verified."
+                                        showError = true
+                                        isProcessing = false
+                                    }
+                                case .userCancelled:
+                                    print("⚠️ User cancelled")
+                                    isProcessing = false
+                                default:
+                                    print("❌ Purchase failed with unknown state")
+                                    errorMessage = "Something went wrong. Try again."
                                     showError = true
+                                    isProcessing = false
                                 }
+
                             } catch {
-                                isProcessing = false
+                                print("❌ Purchase error: \(error.localizedDescription)")
                                 errorMessage = error.localizedDescription
                                 showError = true
+                                isProcessing = false
                             }
                         }
                     } label: {
@@ -65,16 +86,16 @@ struct SubscriptionView: View {
                             .font(.headline)
                             .foregroundColor(.black)
                             .frame(maxWidth: .infinity)
-                            .frame(height: 50) // ✅ обязательно для iPad
+                            .frame(height: 50)
                             .background(Color.white)
                             .cornerRadius(12)
                     }
-                    .disabled(isProcessing || storeKit.products.isEmpty)
+                    .disabled(isProcessing)
 
                     RestorePurchaseButton(isProcessing: $isProcessing) {
                         dismiss()
                     }
-                    .frame(height: 50) // ✅ важно для iPad
+                    .frame(height: 50)
                 }
                 .padding(.horizontal)
             }
@@ -92,24 +113,20 @@ struct SubscriptionView: View {
 
             HStack(spacing: 24) {
                 Link("Terms of Use", destination: URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")!)
-                    .font(.footnote)
-                    .foregroundColor(.white.opacity(0.7))
-
                 Link("Privacy Policy", destination: URL(string: "https://www.apple.com/legal/privacy/")!)
-                    .font(.footnote)
-                    .foregroundColor(.white.opacity(0.7))
             }
+            .font(.footnote)
+            .foregroundColor(.white.opacity(0.7))
             .padding(.top, 16)
 
             Spacer()
         }
         .padding()
         .background(
-            LinearGradient(
-                colors: [Color.black, Color.blue.opacity(0.4)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            ).ignoresSafeArea()
+            LinearGradient(colors: [Color.black, Color.blue.opacity(0.4)],
+                           startPoint: .topLeading,
+                           endPoint: .bottomTrailing)
+            .ignoresSafeArea()
         )
         .alert("Purchase Error", isPresented: $showError) {
             Button("OK", role: .cancel) { }

@@ -23,18 +23,21 @@ struct PurchaseBannerView: View {
 
                 Spacer()
 
+                // ✅ Кнопка "Unlock All" с поддержкой iPad
                 Button(action: {
                     showSubscription = true
                 }) {
                     Text("Unlock All")
                         .font(.subheadline.bold())
                         .foregroundColor(.black)
-                        .padding(.vertical, 8)
+                        .frame(minWidth: 100, maxHeight: 50) // ✅ фиксированная высота
                         .padding(.horizontal, 16)
                         .background(Color.white)
-                        .cornerRadius(8)
+                        .cornerRadius(10)
+                        .contentShape(Rectangle()) // ✅ активная зона
                 }
 
+                // ❌ Кнопка закрытия
                 Button(action: {
                     withAnimation {
                         showBanner = false
@@ -43,7 +46,7 @@ struct PurchaseBannerView: View {
                     Image(systemName: "xmark.circle.fill")
                         .foregroundColor(.white.opacity(0.7))
                         .imageScale(.large)
-                        .padding(.leading, 8)
+                        .frame(width: 32, height: 32)
                 }
             }
             .padding()
@@ -54,11 +57,14 @@ struct PurchaseBannerView: View {
             )
             .cornerRadius(16)
             .padding(.horizontal)
-            .padding(.bottom, 10)
+            .padding(.bottom, 12)
+
+            // ✅ Подключение экрана подписки
             .sheet(isPresented: $showSubscription) {
                 SubscriptionView()
                     .environmentObject(soundVM)
             }
         }
+        .ignoresSafeArea(edges: .bottom)
     }
 }

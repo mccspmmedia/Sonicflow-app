@@ -26,53 +26,58 @@ class StoreKitManager: ObservableObject {
                 products = [product]
                 print("✅ Product loaded: \(product.displayName)")
             } else {
-                print("⚠️ Product not found in StoreKit list")
+                print("⚠️ Product not found in App Store response")
+                products = []
             }
         } catch {
             print("❌ Failed to fetch products: \(error.localizedDescription)")
+            products = []
         }
     }
 
     // MARK: - Покупка премиума
     func purchasePremium() async throws {
         guard let product = products.first(where: { $0.id == premiumProductID }) else {
+            print("❌ Product not available in loaded list")
             throw StoreKitError.productNotAvailable
         }
 
-        print("🛒 Attempting purchase for: \(product.displayName)")
+        print("🛒 Initiating purchase for: \(product.displayName)")
+
         let result = try await product.purchase()
 
         switch result {
         case .success(let verification):
             switch verification {
             case .verified(let transaction):
-                print("✅ Transaction verified for \(transaction.productID)")
+                print("✅ Transaction verified: \(transaction.productID)")
                 await transaction.finish()
                 await unlockPremium()
                 try? await AppStore.sync()
+
             case .unverified(_, let error):
-                print("❌ Unverified purchase: \(error.localizedDescription)")
+                print("❌ Unverified transaction: \(error.localizedDescription)")
                 throw error
             }
 
         case .pending:
-            print("🕒 Purchase pending")
+            print("🕒 Purchase is pending...")
             throw StoreKitError.purchasePending
 
         case .userCancelled:
-            print("⚠️ Purchase cancelled by user")
+            print("⚠️ User cancelled the purchase")
             throw StoreKitError.userCancelled
 
-        default:
-            print("⚠️ Unknown purchase result")
+        @unknown default:
+            print("❓ Unknown purchase result")
             throw StoreKitError.unknown
         }
     }
 
-    // MARK: - Восстановление
+    // MARK: - Восстановление покупки
     func restorePurchase() async {
         do {
-            print("🔁 Attempting to restore...")
+            print("🔁 Attempting to restore purchases...")
             try await AppStore.sync()
             await checkPremiumStatus()
         } catch {
@@ -80,31 +85,30 @@ class StoreKitManager: ObservableObject {
         }
     }
 
-    // MARK: - Проверка текущей подписки
+    // MARK: - Проверка подписки
     func checkPremiumStatus() async {
-        print("🔍 Checking entitlement...")
+        print("🔍 Checking current entitlement state...")
 
         for await result in Transaction.currentEntitlements {
             if case .verified(let transaction) = result,
                transaction.productID == premiumProductID {
-                print("✅ Active subscription found")
+                print("✅ Active entitlement found for \(transaction.productID)")
                 await unlockPremium()
                 return
             }
         }
 
-        // fallback на UserDefaults
-        let saved = UserDefaults.standard.bool(forKey: "isPremiumUnlocked")
-        isPremiumPurchased = saved
-        print(saved ? "✅ Premium restored from local" : "ℹ️ No valid entitlement")
+        let fallback = UserDefaults.standard.bool(forKey: "isPremiumUnlocked")
+        isPremiumPurchased = fallback
+        print(fallback ? "✅ Premium restored from local storage" : "ℹ️ No premium entitlement found")
     }
 
-    // MARK: - Разблокировка
+    // MARK: - Активация премиума
     func unlockPremium() async {
         isPremiumPurchased = true
         UserDefaults.standard.set(true, forKey: "isPremiumUnlocked")
         NotificationCenter.default.post(name: .premiumUnlocked, object: nil)
-        print("🎉 Premium unlocked and stored locally")
+        print("🎉 Premium access unlocked and saved")
     }
 }
 
@@ -118,13 +122,13 @@ enum StoreKitError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .productNotAvailable:
-            return "Product is not available."
+            return "The subscription product is not currently available."
         case .purchasePending:
-            return "Purchase is pending. Please wait."
+            return "Your purchase is still pending. Please wait."
         case .userCancelled:
-            return "Purchase cancelled."
+            return "The purchase was cancelled."
         case .unknown:
-            return "Unknown error occurred."
+            return "An unknown error occurred. Please try again."
         }
     }
 }

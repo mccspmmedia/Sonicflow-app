@@ -19,7 +19,33 @@ class AppleAuthManager {
         print("📦 Saved Apple User ID: \(userID)")
     }
 
-    /// Проверяет состояние авторизации Apple ID через API Apple
+    /// Проверяет состояние авторизации Apple ID и сбрасывает статус при недействительности
+    func checkCredentialStateAndUpdateStatus() {
+        guard let userID = UserDefaults.standard.string(forKey: userIdKey) else {
+            print("ℹ️ No saved Apple user ID found")
+            setLoggedOut()
+            return
+        }
+
+        let provider = ASAuthorizationAppleIDProvider()
+        provider.getCredentialState(forUserID: userID) { state, _ in
+            DispatchQueue.main.async {
+                switch state {
+                case .authorized:
+                    print("✅ Apple credential still valid")
+                    break // ничего не делаем
+                case .revoked, .notFound:
+                    print("⚠️ Apple credential revoked or not found")
+                    self.setLoggedOut()
+                default:
+                    print("ℹ️ Apple credential state: \(state.rawValue)")
+                    self.setLoggedOut()
+                }
+            }
+        }
+    }
+
+    /// Версия метода с ручной обработкой (используется в MainTabView)
     func checkCredentialState(completion: @escaping (ASAuthorizationAppleIDProvider.CredentialState) -> Void) {
         guard let userID = UserDefaults.standard.string(forKey: userIdKey) else {
             completion(.notFound)
@@ -34,15 +60,27 @@ class AppleAuthManager {
         }
     }
 
-    /// Удаляет userID и сбрасывает локальную авторизацию
+    /// Принудительный выход
     func signOut() {
-        UserDefaults.standard.removeObject(forKey: userIdKey)
-        UserDefaults.standard.set(false, forKey: loginStatusKey)
-        print("👋 Apple User ID removed")
+        setLoggedOut()
+        print("👋 Apple User ID and login status removed")
     }
 
     /// Полное удаление аккаунта
     func deleteAccount() {
         signOut()
+        // Здесь можно добавить запрос на сервер для удаления данных, если нужно
     }
+
+    /// Сброс всех данных входа
+    private func setLoggedOut() {
+        UserDefaults.standard.removeObject(forKey: userIdKey)
+        UserDefaults.standard.set(false, forKey: loginStatusKey)
+        NotificationCenter.default.post(name: .didLogOut, object: nil)
+    }
+}
+
+// Уведомление при выходе (если нужно использовать)
+extension Notification.Name {
+    static let didLogOut = Notification.Name("didLogOut")
 }

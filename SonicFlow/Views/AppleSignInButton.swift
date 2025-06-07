@@ -21,7 +21,7 @@ struct AppleSignInButton: UIViewRepresentable {
     }
 
     class Coordinator: NSObject, ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
-        @AppStorage("isLoggedIn") var isLoggedIn = false
+        @AppStorage("isLoggedIn") private var isLoggedIn = false
         private var isPresented: Binding<Bool>
 
         init(isPresented: Binding<Bool>) {
@@ -29,10 +29,9 @@ struct AppleSignInButton: UIViewRepresentable {
         }
 
         @objc func handleAuthorizationAppleID() {
-            print("👉 Apple Sign-In button tapped")
+            print("👉 Apple Sign-In tapped")
 
-            let provider = ASAuthorizationAppleIDProvider()
-            let request = provider.createRequest()
+            let request = ASAuthorizationAppleIDProvider().createRequest()
             request.requestedScopes = [.fullName, .email]
 
             let controller = ASAuthorizationController(authorizationRequests: [request])
@@ -50,12 +49,14 @@ struct AppleSignInButton: UIViewRepresentable {
 
         func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
             guard let credential = authorization.credential as? ASAuthorizationAppleIDCredential else {
-                print("⚠️ Invalid credential type")
+                print("⚠️ Invalid credential type returned")
                 return
             }
 
-            print("✅ Apple Sign-In successful. UserID: \(credential.user)")
-            AppleAuthManager.shared.store(userID: credential.user)
+            let userID = credential.user
+            print("✅ Apple Sign-In successful. UserID: \(userID)")
+
+            AppleAuthManager.shared.store(userID: userID)
             isLoggedIn = true
             isPresented.wrappedValue = false
         }

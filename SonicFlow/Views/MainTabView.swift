@@ -1,14 +1,15 @@
 import SwiftUI
+import AuthenticationServices
 
 struct MainTabView: View {
-    @AppStorage("isLoggedIn") private var isLoggedIn = true
+    @AppStorage("isLoggedIn") private var isLoggedIn = false
     @State private var selectedTab = 0
 
     var body: some View {
         GeometryReader { geometry in
             TabView(selection: $selectedTab) {
 
-                // 🏠 Главная (видео + контент)
+                // 🏠 Home with video background
                 ZStack {
                     VideoBackgroundView()
                         .frame(width: geometry.size.width, height: geometry.size.height)
@@ -22,46 +23,32 @@ struct MainTabView: View {
                 }
                 .tag(0)
 
-                // 🍃 Nature
                 NatureView()
-                    .tabItem {
-                        Label("Nature", systemImage: "leaf.fill")
-                    }
+                    .tabItem { Label("Nature", systemImage: "leaf.fill") }
                     .tag(1)
 
-                // 🌙 Sleep
                 SleepView()
-                    .tabItem {
-                        Label("Sleep", systemImage: "moon.fill")
-                    }
+                    .tabItem { Label("Sleep", systemImage: "moon.fill") }
                     .tag(2)
 
-                // 🧘 Meditation
                 MeditationView()
-                    .tabItem {
-                        Label("Meditation", systemImage: "sparkles")
-                    }
+                    .tabItem { Label("Meditation", systemImage: "sparkles") }
                     .tag(3)
 
-                // 🌆 Ambience
                 AmbienceView()
-                    .tabItem {
-                        Label("Ambience", systemImage: "waveform.path.ecg")
-                    }
+                    .tabItem { Label("Ambience", systemImage: "waveform.path.ecg") }
                     .tag(4)
             }
             .accentColor(.white)
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .onAppear {
                 setupTabBarAppearance()
-            }
-            .fullScreenCover(
-                isPresented: Binding(
-                    get: { !isLoggedIn },
-                    set: { isLoggedIn = !$0 }
-                )
-            ) {
-                LoginSheetView()
+
+                // ✅ Проверка валидности Apple ID — без вызова LoginSheet
+                AppleAuthManager.shared.checkCredentialState { state in
+                    if state != .authorized {
+                        isLoggedIn = false
+                    }
+                }
             }
         }
     }
@@ -70,7 +57,6 @@ struct MainTabView: View {
         let appearance = UITabBarAppearance()
         appearance.configureWithOpaqueBackground()
         appearance.backgroundColor = UIColor(named: "DarkBlue") ?? UIColor.systemBlue
-
         UITabBar.appearance().standardAppearance = appearance
         UITabBar.appearance().scrollEdgeAppearance = appearance
     }
