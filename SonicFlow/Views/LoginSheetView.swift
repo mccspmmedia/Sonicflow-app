@@ -1,7 +1,10 @@
 import SwiftUI
 
 struct LoginSheetView: View {
+    @AppStorage("isLoggedIn") var isLoggedIn = false
     @Environment(\.dismiss) var dismiss
+    @State private var isApplePresented = true
+    @State private var isGooglePresented = true
 
     var body: some View {
         VStack(spacing: 24) {
@@ -13,17 +16,17 @@ struct LoginSheetView: View {
                 .foregroundColor(.white)
                 .padding(.horizontal)
 
-            // 🔐 Apple Sign In (обязательно указывать высоту!)
-            AppleSignInButton()
+            // 🔐 Apple Sign In
+            AppleSignInButton(isPresented: $isApplePresented)
                 .frame(height: 50)
                 .padding(.horizontal)
 
             // 🔐 Google Sign In
-            GoogleSignInButton()
+            GoogleSignInButton(isPresented: $isGooglePresented)
                 .frame(height: 50)
                 .padding(.horizontal)
 
-            // ❌ Закрытие окна входа
+            // 🔙 Закрыть без входа
             Button("Close") {
                 dismiss()
             }

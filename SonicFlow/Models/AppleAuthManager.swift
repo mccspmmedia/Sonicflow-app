@@ -5,6 +5,7 @@ class AppleAuthManager {
     static let shared = AppleAuthManager()
 
     private let userIdKey = "appleAuthorizedUserIdKey"
+    private let loginStatusKey = "isLoggedIn"
 
     /// Проверяет, сохранён ли userID — используется как индикатор входа
     var isSignedIn: Bool {
@@ -14,6 +15,7 @@ class AppleAuthManager {
     /// Сохраняет userID после успешного входа через Apple
     func store(userID: String) {
         UserDefaults.standard.set(userID, forKey: userIdKey)
+        UserDefaults.standard.set(true, forKey: loginStatusKey)
         print("📦 Saved Apple User ID: \(userID)")
     }
 
@@ -35,6 +37,7 @@ class AppleAuthManager {
     /// Удаляет userID и сбрасывает локальную авторизацию
     func signOut() {
         UserDefaults.standard.removeObject(forKey: userIdKey)
+        UserDefaults.standard.set(false, forKey: loginStatusKey)
         print("👋 Apple User ID removed")
     }
 

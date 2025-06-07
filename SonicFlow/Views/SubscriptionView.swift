@@ -5,6 +5,8 @@ struct SubscriptionView: View {
     @Environment(\.dismiss) var dismiss
     @ObservedObject var storeKit = StoreKitManager.shared
     @State private var isProcessing = false
+    @State private var showError = false
+    @State private var errorMessage = ""
 
     var body: some View {
         VStack(spacing: 24) {
@@ -36,25 +38,43 @@ struct SubscriptionView: View {
                     Button {
                         isProcessing = true
                         Task {
-                            await storeKit.purchasePremium()
-                            isProcessing = false
-                            if storeKit.isPremiumPurchased {
-                                dismiss()
+                            if storeKit.products.isEmpty {
+                                isProcessing = false
+                                errorMessage = "Product not available. Please try again later."
+                                showError = true
+                                return
+                            }
+
+                            do {
+                                try await storeKit.purchasePremium()
+                                isProcessing = false
+                                if storeKit.isPremiumPurchased {
+                                    dismiss()
+                                } else {
+                                    errorMessage = "Purchase did not complete."
+                                    showError = true
+                                }
+                            } catch {
+                                isProcessing = false
+                                errorMessage = error.localizedDescription
+                                showError = true
                             }
                         }
                     } label: {
                         Text("Subscribe for $9.99 / month")
                             .font(.headline)
                             .foregroundColor(.black)
-                            .frame(maxWidth: 300) // UX улучшение
-                            .padding()
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 50) // ✅ обязательно для iPad
                             .background(Color.white)
                             .cornerRadius(12)
                     }
+                    .disabled(isProcessing || storeKit.products.isEmpty)
 
                     RestorePurchaseButton(isProcessing: $isProcessing) {
                         dismiss()
                     }
+                    .frame(height: 50) // ✅ важно для iPad
                 }
                 .padding(.horizontal)
             }
@@ -64,14 +84,12 @@ struct SubscriptionView: View {
             }
             .foregroundColor(.white.opacity(0.8))
 
-            // ⚠️ Auto-renewal notice
             Text("Subscription auto-renews monthly unless cancelled at least 24 hours before the end of the period. You can manage your subscription in your App Store account settings.")
                 .font(.caption2)
                 .foregroundColor(.white.opacity(0.6))
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
 
-            // ✅ Terms and Privacy links
             HStack(spacing: 24) {
                 Link("Terms of Use", destination: URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")!)
                     .font(.footnote)
@@ -93,5 +111,10 @@ struct SubscriptionView: View {
                 endPoint: .bottomTrailing
             ).ignoresSafeArea()
         )
+        .alert("Purchase Error", isPresented: $showError) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text(errorMessage)
+        }
     }
 }

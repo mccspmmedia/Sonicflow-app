@@ -6,14 +6,15 @@ struct SonicFlowApp: App {
     @StateObject private var videoVM = AppVideoViewModel()
 
     init() {
-        UITabBar.appearance().barTintColor = UIColor(named: "DarkBlue")
-        UITabBar.appearance().backgroundColor = UIColor(named: "DarkBlue")
+        let darkBlue = UIColor(named: "DarkBlue") ?? .black
+        UITabBar.appearance().barTintColor = darkBlue
+        UITabBar.appearance().backgroundColor = darkBlue
         UITabBar.appearance().isTranslucent = false
     }
 
     var body: some Scene {
         WindowGroup {
-            MainTabView() // ✅ заменили NewHomeView на MainTabView
+            MainTabView()
                 .environmentObject(soundVM)
                 .environmentObject(videoVM)
                 .preferredColorScheme(.dark)
