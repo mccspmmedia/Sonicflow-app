@@ -16,7 +16,6 @@
 	<key>Targeted Device Family</key>
 	<array>
 		<string>1</string>
-		<string>2</string>
 	</array>
 	<key>UIBackgroundModes</key>
 	<array>

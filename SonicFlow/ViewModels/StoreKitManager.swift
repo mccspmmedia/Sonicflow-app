@@ -8,7 +8,7 @@ class StoreKitManager: ObservableObject {
     @Published var isPremiumPurchased: Bool = false
     @Published var products: [Product] = []
 
-    private let premiumProductID = "sonicflow.premium"
+    private let premiumProductID = "com.sonicflow.premium"
 
     private init() {
         Task {
@@ -89,18 +89,25 @@ class StoreKitManager: ObservableObject {
     func checkPremiumStatus() async {
         print("🔍 Checking current entitlement state...")
 
+        var hasEntitlement = false
+
         for await result in Transaction.currentEntitlements {
             if case .verified(let transaction) = result,
                transaction.productID == premiumProductID {
                 print("✅ Active entitlement found for \(transaction.productID)")
-                await unlockPremium()
-                return
+                hasEntitlement = true
+                break
             }
         }
 
-        let fallback = UserDefaults.standard.bool(forKey: "isPremiumUnlocked")
-        isPremiumPurchased = fallback
-        print(fallback ? "✅ Premium restored from local storage" : "ℹ️ No premium entitlement found")
+        isPremiumPurchased = hasEntitlement
+
+        if hasEntitlement {
+            await unlockPremium()
+        } else {
+            print("ℹ️ No premium entitlement found. Access is locked.")
+            UserDefaults.standard.set(false, forKey: "isPremiumUnlocked")
+        }
     }
 
     // MARK: - Активация премиума

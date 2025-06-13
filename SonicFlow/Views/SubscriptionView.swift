@@ -92,10 +92,24 @@ struct SubscriptionView: View {
                     }
                     .disabled(isProcessing)
 
-                    RestorePurchaseButton(isProcessing: $isProcessing) {
-                        dismiss()
+                    // ✅ Restore Purchase Button встроенный
+                    Button {
+                        isProcessing = true
+                        Task {
+                            await storeKit.restorePurchase()
+                            isProcessing = false
+                            dismiss()
+                        }
+                    } label: {
+                        Text("Restore Purchase")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 50)
+                            .background(Color.gray.opacity(0.2))
+                            .cornerRadius(12)
                     }
-                    .frame(height: 50)
+                    .disabled(isProcessing)
                 }
                 .padding(.horizontal)
             }

@@ -11,7 +11,6 @@
 		BB1680142DD2418E00191AB9 /* client_657116176614-lm58c8540jfunbuqpqvt7iie3aojlha2.apps.googleusercontent.com.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB1680132DD2418E00191AB9 /* client_657116176614-lm58c8540jfunbuqpqvt7iie3aojlha2.apps.googleusercontent.com.plist */; };
 		BB1680172DD2425800191AB9 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = BB1680162DD2425800191AB9 /* GoogleSignIn */; };
 		BB1680192DD2425800191AB9 /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = BB1680182DD2425800191AB9 /* GoogleSignInSwift */; };
-		BB9090ED2DF4B79300C28608 /* Untitled 3.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB9090EC2DF4B73F00C28608 /* Untitled 3.swift */; };
 		BB9090EF2DF4B7E800C28608 /* TestStoreKit.storekit in Resources */ = {isa = PBXBuildFile; fileRef = BB9090EE2DF4B7E800C28608 /* TestStoreKit.storekit */; };
 		BB9488952DDF207A002FBC81 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB9488942DDF207A002FBC81 /* StoreKit.framework */; };
 /* End PBXBuildFile section */
@@ -39,7 +38,6 @@
 		BB76EC092DC649AA00141171 /* SonicFlow.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SonicFlow.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB76EC162DC649AB00141171 /* SonicFlowTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SonicFlowTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB76EC202DC649AB00141171 /* SonicFlowUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SonicFlowUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		BB9090EC2DF4B73F00C28608 /* Untitled 3.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Untitled 3.swift"; sourceTree = "<group>"; };
 		BB9090EE2DF4B7E800C28608 /* TestStoreKit.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = TestStoreKit.storekit; sourceTree = "<group>"; };
 		BB9488942DDF207A002FBC81 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
@@ -107,7 +105,6 @@
 			isa = PBXGroup;
 			children = (
 				BB9090EE2DF4B7E800C28608 /* TestStoreKit.storekit */,
-				BB9090EC2DF4B73F00C28608 /* Untitled 3.swift */,
 				BB065B322DE9D77300A7B2F3 /* ocean_background.mp4 */,
 				BB76EC0B2DC649AA00141171 /* SonicFlow */,
 				BB76EC192DC649AB00141171 /* SonicFlowTests */,
@@ -289,7 +286,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BB9090ED2DF4B79300C28608 /* Untitled 3.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -454,6 +450,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = SonicFlow/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -464,7 +461,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 2.0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.sonicflow.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -473,7 +470,7 @@
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -489,6 +486,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = SonicFlow/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -499,7 +497,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 2.0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.sonicflow.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -508,7 +506,7 @@
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};

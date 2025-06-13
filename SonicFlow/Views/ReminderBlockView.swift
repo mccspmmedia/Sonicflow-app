@@ -12,15 +12,16 @@ struct ReminderBlockView: View {
 
     var body: some View {
         VStack(spacing: 12) {
-            Text("Hello, Dmytro ✨")
+            // 🔄 Обновлённое приветствие
+            Text("Time to Relax ✨")
                 .font(.title2.bold())
                 .foregroundColor(.white)
 
-            Text("Enable reminders to relax")
+            Text("Turn on reminders to unwind")
                 .font(.subheadline)
                 .foregroundColor(.white)
 
-            Text("Get notified daily to unwind and enjoy calming sounds")
+            Text("Get daily gentle notifications")
                 .font(.footnote)
                 .foregroundColor(.white.opacity(0.85))
                 .multilineTextAlignment(.center)
