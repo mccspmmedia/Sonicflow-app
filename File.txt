@@ -1,1 +1,0 @@
-В появившемся окне выбери StoreKit Configuration File (в разделе Resource).
