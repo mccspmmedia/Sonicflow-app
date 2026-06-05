@@ -1,4 +1,4 @@
-# SonicFlow 🎵
+# SonicFlow 
 
 iOS app for meditation, sleep and relaxation with a powerful sound mixer. Built for the US market.
 
